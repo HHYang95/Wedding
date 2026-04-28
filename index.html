@@ -14,6 +14,38 @@
     <!-- IMPORTANT: og:image must be ABSOLUTE URL for KakaoTalk/Slack/Discord previews -->
     <meta property="og:image" content="https://hhyang95.github.io/Wedding/Cover.jpg">
     <meta property="og:url" content="https://hhyang95.github.io/Wedding/">
+    <meta property="og:image:alt" content="양현호 박수진 결혼식 청첩장 — 2026년 10월 3일 대전 씨엘드포레">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Schema.org Event metadata for rich previews -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        "name": "양현호 ♥ 박수진 결혼식",
+        "startDate": "2026-10-03T11:00:00+09:00",
+        "endDate": "2026-10-03T13:00:00+09:00",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "location": {
+            "@type": "Place",
+            "name": "씨엘드포레",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "동서대로 1700, 7층",
+                "addressLocality": "동구",
+                "addressRegion": "대전광역시",
+                "addressCountry": "KR"
+            }
+        },
+        "image": "https://hhyang95.github.io/Wedding/Cover.jpg",
+        "description": "2026년 10월 3일 토요일 오전 11시 · 대전 씨엘드포레",
+        "organizer": [
+            {"@type": "Person", "name": "양현호"},
+            {"@type": "Person", "name": "박수진"}
+        ]
+    }
+    </script>
 
     <!-- Hero image preload for fast LCP -->
     <link rel="preload" as="image" href="./Cover.jpg" fetchpriority="high">
@@ -545,6 +577,34 @@
             color: var(--ink-secondary);
             text-transform: uppercase;
             -webkit-text-stroke: 0.25px currentColor;
+        }
+        /* Korean text for imminent/today/past phases — non-uppercase, less letter-spacing */
+        .dday-imminent .dday-text,
+        .dday-today    .dday-text,
+        .dday-past     .dday-text {
+            font-family: 'Noto Serif KR', serif;
+            font-size: var(--fz-small);
+            letter-spacing: 0.12em;
+            text-transform: none;
+            font-weight: 500;
+            -webkit-text-stroke: 0;
+            margin-top: 14px;
+        }
+        /* Wedding day — celebratory accent */
+        .dday-today .dday-num {
+            color: var(--accent);
+            animation: ddayPulse 2.4s ease-in-out infinite;
+        }
+        @keyframes ddayPulse {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.04); }
+        }
+        /* Past — softer, smaller for the "thanks" message */
+        .dday-past .dday-num {
+            font-size: clamp(2.4rem, 4vw + 1rem, 3.2rem);
+            color: var(--ink-secondary);
+            font-weight: 500;
+            font-style: normal;
         }
 
         .calendar {
@@ -1146,6 +1206,21 @@
             -webkit-text-stroke: 0.25px currentColor;
         }
 
+        /* ================ FOCUS RING (keyboard users only) ================ */
+        :focus { outline: none; }
+        :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
+            border-radius: 4px;
+        }
+        .gallery-item:focus-visible,
+        .ics-btn:focus-visible,
+        .share-btn:focus-visible,
+        .map-btn:focus-visible,
+        .contact-toggle summary:focus-visible {
+            outline-offset: 4px;
+        }
+
         /* ================ REDUCED MOTION ================ */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
@@ -1416,7 +1491,7 @@
 
         <div class="dday-wrap">
             <div class="dday-num" id="dday">D-—</div>
-            <div class="dday-text">until our wedding</div>
+            <div class="dday-text" id="dday-text">until our wedding</div>
         </div>
 
         <div class="calendar">
@@ -1580,7 +1655,7 @@
 </div>
 
 <!-- ============ LIGHTBOX ============ -->
-<div id="lightbox" aria-hidden="true">
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="사진 크게 보기" aria-hidden="true">
     <button class="lightbox-btn lightbox-close" id="lb-close" aria-label="닫기">
         <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
     </button>
@@ -1596,7 +1671,7 @@
     <div id="lightbox-counter"></div>
 </div>
 
-<div id="toast">복사되었습니다</div>
+<div id="toast" role="status" aria-live="polite" aria-atomic="true">복사되었습니다</div>
 
 <script>
 /* ---------- Intro overlay ---------- */
@@ -1655,6 +1730,13 @@
     }, { once: true });
 })();
 
+/* ---------- Haptic feedback (Android only — iOS Safari ignores) ---------- */
+function haptic(ms = 10) {
+    if (navigator.vibrate) {
+        try { navigator.vibrate(ms); } catch (e) {}
+    }
+}
+
 /* ---------- Scroll-reveal ---------- */
 const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
@@ -1710,10 +1792,21 @@ function buildGallery() {
             if (idx < PHOTOS.length) {
                 item.classList.add('lazy');
                 item.dataset.src = PHOTOS[idx];
-                item.addEventListener('click', () => lightbox.open(PHOTOS, idx));
+                item.setAttribute('role', 'button');
+                item.setAttribute('tabindex', '0');
+                item.setAttribute('aria-label', `사진 ${idx + 1} 크게 보기`);
+                const openLB = () => { haptic(8); lightbox.open(PHOTOS, idx); };
+                item.addEventListener('click', openLB);
+                item.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openLB();
+                    }
+                });
                 galleryIO.observe(item);
             } else {
                 item.classList.add('empty');
+                item.setAttribute('aria-hidden', 'true');
             }
             page.appendChild(item);
         }
@@ -1754,6 +1847,7 @@ function showToast(msg) {
 
 /* ---------- Copy account ---------- */
 function copyAccount(text, btn) {
+    haptic(10);
     copyText(text);
     const original = btn.textContent;
     btn.textContent = '복사 완료';
@@ -1787,11 +1881,37 @@ function updateDDay() {
     const wd = new Date(wedding);
     wd.setHours(0, 0, 0, 0);
     const diff = Math.round((wd - today) / 86400000);
-    const el = document.getElementById('dday');
-    if (!el) return;
-    if (diff > 0) el.textContent = `D-${diff}`;
-    else if (diff === 0) el.textContent = 'TODAY';
-    else el.textContent = `D+${Math.abs(diff)}`;
+
+    const numEl  = document.getElementById('dday');
+    const textEl = document.getElementById('dday-text');
+    const wrapEl = document.querySelector('.dday-wrap');
+    if (!numEl) return;
+
+    if (diff > 7) {
+        /* Normal countdown */
+        numEl.textContent  = `D-${diff}`;
+        if (textEl) textEl.textContent = 'until our wedding';
+    } else if (diff > 1) {
+        /* Within a week — emphasize */
+        numEl.textContent  = `D-${diff}`;
+        if (textEl) textEl.textContent = `${diff}일 남았습니다`;
+        if (wrapEl) wrapEl.classList.add('dday-imminent');
+    } else if (diff === 1) {
+        /* Day before */
+        numEl.textContent  = 'D-1';
+        if (textEl) textEl.textContent = '내일 결혼합니다';
+        if (wrapEl) wrapEl.classList.add('dday-imminent');
+    } else if (diff === 0) {
+        /* Wedding day */
+        numEl.textContent  = 'Today';
+        if (textEl) textEl.textContent = '오늘 저희가 결혼합니다';
+        if (wrapEl) wrapEl.classList.add('dday-today');
+    } else {
+        /* After the wedding */
+        numEl.textContent  = '감사합니다';
+        if (textEl) textEl.textContent = '함께해 주신 모든 분께 감사드립니다';
+        if (wrapEl) wrapEl.classList.add('dday-past');
+    }
 }
 updateDDay();
 
@@ -1822,6 +1942,7 @@ updateDDay();
 
 /* ---------- Add to Google Calendar ---------- */
 function addToCalendar() {
+    haptic(15);
     /* Wedding: 2026.10.03 11:00 KST = 02:00 UTC, 13:00 KST = 04:00 UTC */
     const startUTC = '20261003T020000Z';
     const endUTC   = '20261003T040000Z';
@@ -1843,6 +1964,7 @@ function addToCalendar() {
 const INVITE_OG_IMAGE = 'https://hhyang95.github.io/Wedding/Cover.jpg';
 
 function shareKakao() {
+    haptic(15);
     if (!window.Kakao || !window.Kakao.isInitialized() || !window.Kakao.Share) {
         copyURL();
         showToast('카카오톡 공유를 사용할 수 없어 주소를 복사했습니다');
@@ -1876,6 +1998,7 @@ function shareKakao() {
 }
 
 function copyURL() {
+    haptic(10);
     copyText(location.href);
     showToast('청첩장 주소가 복사되었습니다');
 }
@@ -2008,14 +2131,15 @@ const lightbox = (function () {
 
 /* ---------- Map lightbox ---------- */
 function openMapLightbox() {
+    haptic(8);
     lightbox.open(['./MAP.PNG'], 0);
 }
 
-function openKakaoMap() { window.location.href = 'https://kko.to/Cz7NTucMla'; }
+function openKakaoMap() { haptic(10); window.location.href = 'https://kko.to/Cz7NTucMla'; }
+function openNaverMap() { haptic(10); window.location.href = 'https://naver.me/x67ywAmF'; }
 
 /* Build the 3x3 paged gallery now that lightbox is defined */
 buildGallery();
-function openNaverMap() { window.location.href = 'https://naver.me/x67ywAmF'; }
 </script>
 
 </body>
