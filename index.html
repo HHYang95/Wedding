@@ -32,10 +32,10 @@
             --bg-card-soft:  #f5efe5;
             --rule-line:     #e6dccb;
 
-            --ink-primary:   #1f1d1a;
-            --ink-secondary: #5a544b;
-            --ink-tertiary:  #8a8276;
-            --ink-faint:     #b8b0a3;
+            --ink-primary:   #1a1815;
+            --ink-secondary: #4a443b;
+            --ink-tertiary:  #7a7266;
+            --ink-faint:     #a8a093;
 
             --accent:        #a08555;
             --accent-soft:   #c9b48a;
@@ -57,7 +57,7 @@
             --fz-micro:      clamp(0.68rem, 0.25vw + 0.6rem, 0.74rem);
             --fz-tiny:       clamp(0.6rem, 0.2vw + 0.55rem, 0.66rem);
 
-            --pad-card-y:    clamp(36px, 7.5vw, 52px);
+            --pad-card-y:    clamp(40px, 8vw, 56px);
             --pad-card-x:    clamp(24px, 6.5vw, 36px);
 
             --safe-bottom:   env(safe-area-inset-bottom, 0px);
@@ -80,7 +80,7 @@
             -webkit-tap-highlight-color: transparent;
             font-feature-settings: "kern", "liga", "ss01";
             text-rendering: optimizeLegibility;
-            line-height: 1.7;
+            line-height: 1.75;
         }
 
         /* Subtle paper grain */
@@ -306,6 +306,7 @@
             font-size: var(--fz-body);
             line-height: 2.15;
             color: var(--ink-secondary);
+            font-weight: 450;
             margin-bottom: 6px;
             word-break: keep-all;
         }
@@ -319,9 +320,9 @@
             margin: 0 auto;
         }
         .parents .row + .row { margin-top: 6px; }
-        .parents .lineage { text-align: right; font-size: var(--fz-small); color: var(--ink-tertiary); font-weight: 300; }
-        .parents .relation { font-size: var(--fz-tiny); color: var(--ink-faint); letter-spacing: 0.15em; }
-        .parents .name { text-align: left; font-weight: 500; font-size: 1.05rem; color: var(--ink-primary); letter-spacing: 0.08em; }
+        .parents .lineage { text-align: right; font-size: var(--fz-small); color: var(--ink-tertiary); font-weight: 400; }
+        .parents .relation { font-size: var(--fz-tiny); color: var(--ink-faint); letter-spacing: 0.15em; font-weight: 500; }
+        .parents .name { text-align: left; font-weight: 500; font-size: 1.08rem; color: var(--ink-primary); letter-spacing: 0.08em; }
 
         /* ================ CONTACT (within invitation) ================ */
         .contact-toggle {
@@ -436,7 +437,7 @@
         .dday-num {
             font-family: 'Cormorant Garamond', serif;
             font-size: var(--fz-display);
-            font-weight: 300;
+            font-weight: 400;
             letter-spacing: 0.04em;
             color: var(--accent);
             line-height: 1;
@@ -451,7 +452,11 @@
             text-transform: uppercase;
         }
 
-        .calendar { margin: 0 auto; max-width: 320px; }
+        .calendar {
+            margin: 0 auto;
+            max-width: 320px;
+            width: 100%;
+        }
         .calendar-head {
             display: flex;
             justify-content: center;
@@ -464,56 +469,74 @@
             font-size: var(--fz-small);
             letter-spacing: 0.15em;
             color: var(--ink-tertiary);
+            font-weight: 500;
         }
         .cal-month {
             font-size: 1.5rem;
             font-style: italic;
-            font-weight: 400;
+            font-weight: 500;
             color: var(--accent);
         }
-        .calendar-grid {
+
+        /* Day-of-week header row — separate grid so the underline is one continuous line */
+        .cal-dows {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 6px 2px;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.95rem;
-            text-align: center;
-            font-feature-settings: "lnum", "tnum";
+            border-bottom: 1px solid var(--rule-line);
+            padding-bottom: 10px;
+            margin-bottom: 8px;
         }
         .cal-dow {
             font-family: 'Italiana', serif;
             font-size: var(--fz-tiny);
             letter-spacing: 0.12em;
             color: var(--ink-tertiary);
-            padding-bottom: 8px;
-            margin-bottom: 4px;
-            border-bottom: 1px solid var(--rule-line);
+            text-align: center;
         }
         .cal-dow.sunday { color: var(--sunday); }
+
+        /* Day cells grid */
+        .cal-days {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));   /* minmax(0,1fr) prevents overflow */
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            font-weight: 500;
+            font-feature-settings: "lnum", "tnum";
+        }
         .cal-day {
-            padding: 10px 0;
-            color: var(--ink-secondary);
-            position: relative;
+            aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            aspect-ratio: 1;
+            color: var(--ink-secondary);
+            position: relative;
+            max-width: 44px;
+            margin: 0 auto;
         }
         .cal-day.sunday { color: var(--sunday); }
-        .cal-day.empty { color: transparent; pointer-events: none; }
+        .cal-day.empty { visibility: hidden; }
         .cal-day.current {
             color: #fff;
             font-weight: 500;
+            isolation: isolate;
         }
+        /* Circle is centered + size-locked so it never escapes the cell */
         .cal-day.current::before {
             content: '';
             position: absolute;
-            inset: 4px;
+            top: 50%;
+            left: 50%;
+            width: 84%;
+            height: 84%;
+            max-width: 36px;
+            max-height: 36px;
+            transform: translate(-50%, -50%);
             background: var(--accent);
             border-radius: 50%;
             z-index: -1;
         }
-        .cal-day.current { isolation: isolate; }
 
         .calendar-time {
             margin-top: 22px;
@@ -521,6 +544,7 @@
             font-size: var(--fz-small);
             letter-spacing: 0.18em;
             color: var(--ink-secondary);
+            font-weight: 500;
             padding-top: 22px;
             border-top: 1px solid var(--rule-line);
         }
@@ -529,7 +553,6 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            margin-top: 28px;
             padding: 12px 22px;
             border-radius: 999px;
             border: 1px solid var(--accent-soft);
@@ -541,9 +564,20 @@
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.2s ease;
+            text-decoration: none;
+            font-weight: 500;
+            min-height: 44px;
         }
         .ics-btn:active { background: var(--accent-faint); transform: scale(0.98); }
         .ics-btn svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
 
         /* ================ GALLERY ================ */
         .gallery-wrap {
@@ -730,28 +764,30 @@
         }
         .account[open] .chev { transform: rotate(90deg); }
         .account-body {
-            padding: 0 18px 18px;
+            padding: 18px;
             border-top: 1px solid var(--rule-line);
             font-size: var(--fz-small);
             color: var(--ink-secondary);
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
+        }
+        .account-body .bank {
+            font-family: 'Italiana', serif;
+            font-size: var(--fz-small);
+            letter-spacing: 0.18em;
+            color: var(--ink-secondary);
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 8px;
         }
         .account-body .number {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            font-weight: 500;
             color: var(--ink-primary);
-            letter-spacing: 0.04em;
-            margin-top: 14px;
+            letter-spacing: 0.05em;
             font-feature-settings: "lnum", "tnum";
-        }
-        .account-body .bank {
-            font-size: var(--fz-tiny);
-            letter-spacing: 0.2em;
-            color: var(--ink-tertiary);
-            text-transform: uppercase;
-            margin-top: 2px;
         }
         .account-body .copy-btn {
             align-self: flex-start;
@@ -767,6 +803,7 @@
             text-transform: uppercase;
             transition: all 0.2s ease;
             min-height: 36px;
+            font-weight: 500;
         }
         .account-body .copy-btn:active { background: var(--accent-faint); transform: scale(0.98); }
 
@@ -806,45 +843,6 @@
             fill: none;
             stroke: currentColor;
             stroke-width: 1.5;
-        }
-
-        /* ================ RSVP ================ */
-        .rsvp-prompt {
-            font-size: var(--fz-small);
-            color: var(--ink-secondary);
-            margin-bottom: 28px;
-            line-height: 1.9;
-        }
-        .rsvp-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 28px;
-            border-radius: 999px;
-            background: var(--accent);
-            color: var(--bg-card);
-            font-family: 'Italiana', serif;
-            font-size: var(--fz-tiny);
-            letter-spacing: 0.32em;
-            text-transform: uppercase;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid var(--accent);
-            min-height: 44px;
-            margin-bottom: 22px;
-        }
-        .rsvp-btn:active { transform: scale(0.98); background: #8e7448; }
-        .rsvp-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; }
-        .rsvp-deadline {
-            font-size: var(--fz-tiny);
-            color: var(--ink-tertiary);
-            line-height: 1.8;
-            letter-spacing: 0.04em;
-        }
-        .rsvp-deadline span {
-            color: var(--accent);
-            font-weight: 500;
         }
 
         /* ================ LIGHTBOX ================ */
@@ -1047,37 +1045,11 @@
                                 <span class="contact-rel">신랑</span>
                                 <span class="contact-name">양현호</span>
                             </div>
-                            <div class="contact-tel">010-0000-0000</div>
+                            <div class="contact-tel">010-9569-9557</div>
                         </div>
                         <div class="contact-actions">
-                            <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
-                            <a class="contact-btn" href="sms:01000000000" aria-label="문자"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></a>
-                        </div>
-                    </div>
-                    <div class="contact-row">
-                        <div class="contact-info">
-                            <div class="contact-meta">
-                                <span class="contact-rel">아버지</span>
-                                <span class="contact-name">양문규</span>
-                            </div>
-                            <div class="contact-tel">010-0000-0000</div>
-                        </div>
-                        <div class="contact-actions">
-                            <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
-                            <a class="contact-btn" href="sms:01000000000" aria-label="문자"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></a>
-                        </div>
-                    </div>
-                    <div class="contact-row">
-                        <div class="contact-info">
-                            <div class="contact-meta">
-                                <span class="contact-rel">어머니</span>
-                                <span class="contact-name">조미라</span>
-                            </div>
-                            <div class="contact-tel">010-0000-0000</div>
-                        </div>
-                        <div class="contact-actions">
-                            <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
-                            <a class="contact-btn" href="sms:01000000000" aria-label="문자"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></a>
+                            <a class="contact-btn" href="tel:01095699557" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
+                            <a class="contact-btn" href="sms:01095699557" aria-label="문자"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></a>
                         </div>
                     </div>
                 </div>
@@ -1090,37 +1062,11 @@
                                 <span class="contact-rel">신부</span>
                                 <span class="contact-name">박수진</span>
                             </div>
-                            <div class="contact-tel">010-0000-0000</div>
+                            <div class="contact-tel">010-7257-0430</div>
                         </div>
                         <div class="contact-actions">
-                            <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
-                            <a class="contact-btn" href="sms:01000000000" aria-label="문자"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></a>
-                        </div>
-                    </div>
-                    <div class="contact-row">
-                        <div class="contact-info">
-                            <div class="contact-meta">
-                                <span class="contact-rel">아버지</span>
-                                <span class="contact-name">박복용</span>
-                            </div>
-                            <div class="contact-tel">010-0000-0000</div>
-                        </div>
-                        <div class="contact-actions">
-                            <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
-                            <a class="contact-btn" href="sms:01000000000" aria-label="문자"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></a>
-                        </div>
-                    </div>
-                    <div class="contact-row">
-                        <div class="contact-info">
-                            <div class="contact-meta">
-                                <span class="contact-rel">어머니</span>
-                                <span class="contact-name">진옥영</span>
-                            </div>
-                            <div class="contact-tel">010-0000-0000</div>
-                        </div>
-                        <div class="contact-actions">
-                            <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
-                            <a class="contact-btn" href="sms:01000000000" aria-label="문자"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></a>
+                            <a class="contact-btn" href="tel:01072570430" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
+                            <a class="contact-btn" href="sms:01072570430" aria-label="문자"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></a>
                         </div>
                     </div>
                 </div>
@@ -1146,14 +1092,29 @@
                 <span class="cal-year">2026</span>
                 <span class="cal-month">October</span>
             </div>
-            <div class="calendar-grid" id="cal-grid"></div>
+            <div class="cal-dows">
+                <span class="cal-dow sunday">SUN</span>
+                <span class="cal-dow">MON</span>
+                <span class="cal-dow">TUE</span>
+                <span class="cal-dow">WED</span>
+                <span class="cal-dow">THU</span>
+                <span class="cal-dow">FRI</span>
+                <span class="cal-dow">SAT</span>
+            </div>
+            <div class="cal-days" id="cal-grid"></div>
             <div class="calendar-time">11:00 AM · Saturday</div>
         </div>
 
-        <button class="ics-btn" onclick="downloadICS()">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>Add to Calendar</span>
-        </button>
+        <div class="action-buttons">
+            <button class="ics-btn" onclick="downloadICS()">
+                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>Add to Calendar</span>
+            </button>
+            <a href="https://forms.gle/YOUR_FORM_ID_HERE" target="_blank" rel="noopener" class="ics-btn">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>RSVP</span>
+            </a>
+        </div>
     </section>
 
     <!-- ============ 03 GALLERY ============ -->
@@ -1223,34 +1184,10 @@
         </div>
     </section>
 
-    <!-- ============ 05 RSVP ============ -->
+    <!-- ============ 05 ACCOUNTS ============ -->
     <section class="card observe-target">
         <div class="section-header">
             <span class="card-num">05</span>
-            <span class="en">RSVP</span>
-            <span class="ko-sub">참석 의사 전하기</span>
-        </div>
-
-        <p class="rsvp-prompt">
-            참석 여부를 알려주시면<br>
-            준비에 큰 도움이 됩니다.
-        </p>
-
-        <a href="https://forms.gle/YOUR_FORM_ID_HERE" target="_blank" rel="noopener" class="rsvp-btn">
-            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span>참석 의사 전하기</span>
-        </a>
-
-        <p class="rsvp-deadline">
-            부득이한 사정이 있으시다면<br>
-            <span>2026년 9월 20일</span>까지 회신 부탁드립니다.
-        </p>
-    </section>
-
-    <!-- ============ 06 ACCOUNTS ============ -->
-    <section class="card observe-target">
-        <div class="section-header">
-            <span class="card-num">06</span>
             <span class="en">Heartfelt Thanks</span>
             <span class="ko-sub">마음 전하실 곳</span>
         </div>
@@ -1291,10 +1228,10 @@
         </div>
     </section>
 
-    <!-- ============ 07 SHARE ============ -->
+    <!-- ============ 06 SHARE ============ -->
     <section class="card observe-target" style="margin-bottom: 28px;">
         <div class="section-header">
-            <span class="card-num">07</span>
+            <span class="card-num">06</span>
             <span class="en">Share</span>
             <span class="ko-sub">청첩장 전하기</span>
         </div>
@@ -1425,20 +1362,13 @@ updateDDay();
 (function buildCalendar() {
     const grid = document.getElementById('cal-grid');
     if (!grid) return;
-    const dows = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-    dows.forEach((d, i) => {
-        const el = document.createElement('span');
-        el.className = 'cal-dow' + (i === 0 ? ' sunday' : '');
-        el.textContent = d;
-        grid.appendChild(el);
-    });
     const year = 2026, month = 10;
     const firstDow = new Date(year, month - 1, 1).getDay();
     const lastDate = new Date(year, month, 0).getDate();
+    /* Empty cells before the 1st */
     for (let i = 0; i < firstDow; i++) {
         const e = document.createElement('span');
         e.className = 'cal-day empty';
-        e.textContent = '·';
         grid.appendChild(e);
     }
     for (let d = 1; d <= lastDate; d++) {
