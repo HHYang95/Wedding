@@ -222,7 +222,7 @@
             position: absolute; inset: 0;
             background-image: url('./Cover.jpg');
             background-size: cover;
-            background-position: center 28%;
+            background-position: center 50%;
             transform: scale(1.05);
             animation: kenburns 22s ease-out forwards;
             animation-play-state: paused;
@@ -290,10 +290,14 @@
             font-weight: 400;
         }
         .hero-date {
-            font-size: var(--fz-micro);
-            letter-spacing: 0.22em;
-            color: var(--ink-secondary);
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.14em;
+            color: var(--ink-primary);
             margin-bottom: 6px;
+            font-feature-settings: "lnum";
         }
         .hero-venue {
             font-size: var(--fz-small);
@@ -964,24 +968,32 @@
         .account[open] { border-color: var(--accent-soft); }
         .account summary {
             list-style: none;
-            padding: 16px 18px;
+            padding: 18px 22px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
             font-size: var(--fz-body);
-            font-weight: 500;
+            font-weight: 600;
             color: var(--ink-primary);
-            letter-spacing: 0.04em;
-            min-height: 52px;
+            letter-spacing: 0.06em;
+            min-height: 56px;
+            background: var(--bg-card-soft);
+            transition: background 0.2s ease;
+        }
+        .account[open] summary {
+            background: var(--accent-faint);
+        }
+        .account summary:active {
+            background: var(--accent-faint);
         }
         .account summary::-webkit-details-marker { display: none; }
         .account .chev {
-            font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
-            font-size: 0.85rem;
             color: var(--accent);
-            transition: transform 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+            line-height: 1;
         }
         .account[open] .chev { transform: rotate(90deg); }
         .account-body {
@@ -1211,11 +1223,12 @@
         .footer-mark {
             text-align: center;
             margin: 36px 0 12px;
-            font-family: 'Italiana', serif;
-            font-size: 0.72rem;
-            letter-spacing: 0.4em;
-            color: var(--ink-tertiary);
-            -webkit-text-stroke: 0.25px currentColor;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 500;
+            font-size: 1rem;
+            letter-spacing: 0.18em;
+            color: var(--ink-secondary);
         }
 
         /* ================ FOCUS RING (keyboard users only) ================ */
@@ -1412,7 +1425,7 @@
                 <span class="amp">&amp;</span>
                 <span class="ko">박수진</span>
             </h1>
-            <p class="hero-date en-display">2026 · 10 · 03 · SAT · 11 AM</p>
+            <p class="hero-date">2026 · 10 · 03 · SAT · 11 AM</p>
             <p class="hero-venue">대전 씨엘드포레 · 7F</p>
             <div class="scroll-cue"><span>Scroll</span></div>
         </div>
@@ -1615,7 +1628,7 @@
             <details class="account">
                 <summary>
                     <span>신랑 · 양현호</span>
-                    <span class="chev">›</span>
+                    <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></span>
                 </summary>
                 <div class="account-body">
                     <div>
@@ -1629,7 +1642,7 @@
             <details class="account">
                 <summary>
                     <span>신부 · 박수진</span>
-                    <span class="chev">›</span>
+                    <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></span>
                 </summary>
                 <div class="account-body">
                     <div>
