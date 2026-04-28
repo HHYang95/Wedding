@@ -12,11 +12,11 @@
     <meta property="og:title" content="양현호 & 박수진 결혼합니다">
     <meta property="og:description" content="2026년 10월 3일 토요일 오전 11시 · 대전 씨엘드포레">
     <!-- IMPORTANT: og:image must be ABSOLUTE URL for KakaoTalk/Slack/Discord previews -->
-    <meta property="og:image" content="https://hhyang95.github.io/Wedding/8F1A5624.jpg">
+    <meta property="og:image" content="https://hhyang95.github.io/Wedding/Cover.jpg">
     <meta property="og:url" content="https://hhyang95.github.io/Wedding/">
 
     <!-- Hero image preload for fast LCP -->
-    <link rel="preload" as="image" href="./8F1A5624.jpg" fetchpriority="high">
+    <link rel="preload" as="image" href="./Cover.jpg" fetchpriority="high">
 
     <!-- SVG favicon (ampersand in bronze) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='75' text-anchor='middle' font-size='80' font-family='Georgia,serif' fill='%23a08555' font-style='italic'>%26</text></svg>">
@@ -180,12 +180,14 @@
         }
         .hero-bg {
             position: absolute; inset: 0;
-            background-image: url('./8F1A5624.jpg');
+            background-image: url('./Cover.jpg');
             background-size: cover;
             background-position: center 28%;
             transform: scale(1.05);
             animation: kenburns 22s ease-out forwards;
+            animation-play-state: paused;
         }
+        .hero-bg.run { animation-play-state: running; }
         @keyframes kenburns {
             from { transform: scale(1.05); }
             to   { transform: scale(1.13); }
@@ -717,8 +719,31 @@
             -webkit-tap-highlight-color: transparent;
         }
         .gallery-item:active { transform: scale(0.98); }
-        .gallery-item.lazy { opacity: 0; }
-        .gallery-item.lazy.loaded { opacity: 1; }
+
+        /* Lazy items show a shimmering placeholder until image loads */
+        .gallery-item.lazy:not(.loaded) {
+            background-color: var(--accent-faint);
+            background-image: linear-gradient(
+                110deg,
+                var(--accent-faint) 25%,
+                var(--bg-card-soft) 50%,
+                var(--accent-faint) 75%
+            );
+            background-size: 200% 100%;
+            animation: galleryShimmer 2s linear infinite;
+        }
+        /* On load: stop shimmer, gently reveal photo from blurred to sharp */
+        .gallery-item.lazy.loaded {
+            animation: galleryReveal 0.8s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+        @keyframes galleryShimmer {
+            from { background-position: 200% 0; }
+            to   { background-position: -200% 0; }
+        }
+        @keyframes galleryReveal {
+            from { filter: blur(8px) brightness(1.04); transform: scale(1.02); }
+            to   { filter: blur(0)   brightness(1);    transform: scale(1); }
+        }
         .gallery-dots {
             display: flex;
             justify-content: center;
@@ -1014,6 +1039,14 @@
             will-change: transform;
         }
         #lightbox-img.swiping { transition: none; }
+        /* Initial open zoom-in (only on .reveal — not on prev/next navigation) */
+        #lightbox.reveal #lightbox-img {
+            animation: lightboxReveal 0.45s cubic-bezier(0.22,1,0.36,1);
+        }
+        @keyframes lightboxReveal {
+            from { transform: scale(0.92); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
         .lightbox-btn {
             position: absolute;
             width: 48px; height: 48px;
@@ -1414,12 +1447,12 @@
 
         <div class="gallery-wrap">
             <div class="gallery" id="gallery">
-                <div class="gallery-item" style="background-image: url('./8F1A4594.jpg');"></div>
-                <div class="gallery-item lazy" data-src="./8F1A4882.jpg"></div>
-                <div class="gallery-item lazy" data-src="./8F1A4913.jpg"></div>
-                <div class="gallery-item lazy" data-src="./8F1A5275.jpg"></div>
-                <div class="gallery-item lazy" data-src="./8F1A5443.jpg"></div>
-                <div class="gallery-item lazy" data-src="./8F1A6152.jpg"></div>
+                <div class="gallery-item" style="background-image: url('./1.jpg');"></div>
+                <div class="gallery-item lazy" data-src="./2.jpg"></div>
+                <div class="gallery-item lazy" data-src="./3.jpg"></div>
+                <div class="gallery-item lazy" data-src="./4.jpg"></div>
+                <div class="gallery-item lazy" data-src="./5.jpg"></div>
+                <div class="gallery-item lazy" data-src="./6.jpg"></div>
             </div>
         </div>
 
@@ -1565,12 +1598,16 @@
 /* ---------- Intro overlay ---------- */
 (function intro() {
     const overlay = document.getElementById('intro-overlay');
-    if (!overlay) return;
+    const heroBg = document.querySelector('.hero-bg');
+    const startHero = () => heroBg && heroBg.classList.add('run');
+
+    if (!overlay) { startHero(); return; }
 
     /* Skip on subsequent visits within the same session */
     const KEY = 'wedding-intro-shown';
     if (sessionStorage.getItem(KEY)) {
         overlay.classList.add('done');
+        startHero();
         return;
     }
 
@@ -1582,6 +1619,7 @@
         overlay.classList.add('done');
         document.body.style.overflow = '';
         sessionStorage.setItem(KEY, '1');
+        startHero();
         return;
     }
 
@@ -1591,6 +1629,7 @@
     const fadeTimer = setTimeout(() => {
         overlay.classList.add('fade-out');
         sessionStorage.setItem(KEY, '1');
+        startHero();              /* sync ken burns with the moment user starts seeing hero */
     }, FADE_OUT_AT);
 
     const removeTimer = setTimeout(() => {
@@ -1604,6 +1643,7 @@
         clearTimeout(removeTimer);
         overlay.classList.add('fade-out');
         sessionStorage.setItem(KEY, '1');
+        startHero();
         setTimeout(() => {
             overlay.classList.add('done');
             document.body.style.overflow = '';
@@ -1738,7 +1778,7 @@ function addToCalendar() {
 }
 
 /* ---------- KakaoTalk Share ---------- */
-const INVITE_OG_IMAGE = 'https://hhyang95.github.io/Wedding/8F1A5624.jpg';
+const INVITE_OG_IMAGE = 'https://hhyang95.github.io/Wedding/Cover.jpg';
 
 function shareKakao() {
     if (!window.Kakao || !window.Kakao.isInitialized() || !window.Kakao.Share) {
@@ -1861,7 +1901,9 @@ const lightbox = (function () {
         urls = srcArr;
         index = startIdx;
         update();
-        el.classList.add('open');
+        el.classList.add('open', 'reveal');
+        /* Remove reveal class after animation completes so prev/next don't re-animate */
+        setTimeout(() => el.classList.remove('reveal'), 500);
         el.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
     }
