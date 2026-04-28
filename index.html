@@ -5,20 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="color-scheme" content="light">
     <meta name="supported-color-schemes" content="light">
-    
     <title>Ethereal Wedding | 양현호 & 박수진</title>
-    
     <meta property="og:title" content="양현호 & 박수진 결혼합니다">
     <meta property="og:description" content="2026년 10월 3일 오전 11시 | 대전 씨엘드포레">
     <meta property="og:image" content="./8F1A5135.JPG">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4d7ecd1f497c03701268ff3494996a6c"></script>
     <style>
         :root {
-            /* 4. 브라우저 차원의 라이트 모드 강제 */
             color-scheme: light;
             --gold: #d4af37;
             --gold-light: #f3e5ab;
@@ -28,13 +24,10 @@
             --glass-border: rgba(255, 255, 255, 0.8);
             --glass-shadow: rgba(139, 126, 102, 0.15);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: 'Noto Serif KR', serif;
             color: var(--text-main);
-            /* 배경 그라데이션 애니메이션 */
             background: linear-gradient(-45deg, #fdfbfb, #f3e5ab, #ffffff, #eaddcf);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
@@ -43,13 +36,11 @@
             justify-content: center;
             -webkit-font-smoothing: antialiased;
         }
-
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
         #particle-canvas {
             position: fixed;
             top: 0; left: 0;
@@ -57,7 +48,6 @@
             z-index: 1;
             pointer-events: none; 
         }
-
         #app {
             position: relative;
             z-index: 2;
@@ -66,7 +56,6 @@
             min-height: 100vh;
             padding-bottom: 100px;
         }
-
         .glass-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
@@ -81,15 +70,11 @@
             transform: translateY(30px) scale(0.98);
             transition: all 1s cubic-bezier(0.25, 1, 0.5, 1);
         }
-
         .glass-panel.visible {
             opacity: 1;
             transform: translateY(0) scale(1);
         }
-
         .en-font { font-family: 'Playfair Display', serif; }
-        
-        /* 커버 섹션 (2번 사진) */
         .hero {
             position: relative;
             height: 100vh;
@@ -100,7 +85,6 @@
             text-align: center;
             overflow: hidden;
         }
-        
         .hero-bg {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -115,35 +99,30 @@
             background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.7) 65%, rgba(255,255,255,1) 100%);
             z-index: -1;
         }
-
         .hero-title {
             font-size: 2.6rem;
             font-weight: 400;
             letter-spacing: 0.1em;
             margin-bottom: 20px;
         }
-
         .hero-date {
             font-size: 1.1rem;
             letter-spacing: 0.15em;
             color: var(--gold);
             margin-bottom: 40px;
         }
-
         .divider {
             width: 1px;
             height: 60px;
             background: linear-gradient(to bottom, transparent, var(--gold), transparent);
             margin: 30px auto;
         }
-
         h2.section-title {
             font-size: 1.5rem;
             color: var(--gold);
             margin-bottom: 35px;
             letter-spacing: 0.15em;
         }
-
         .paragraph {
             font-size: 1rem;
             line-height: 2.2;
@@ -151,8 +130,6 @@
             margin-bottom: 35px;
             word-break: keep-all;
         }
-
-        /* 갤러리 가로 스크롤 */
         .gallery-container {
             display: flex;
             overflow-x: auto;
@@ -162,7 +139,6 @@
             scrollbar-width: none; 
         }
         .gallery-container::-webkit-scrollbar { display: none; } 
-        
         .gallery-item {
             scroll-snap-align: center;
             flex: 0 0 85%;
@@ -173,8 +149,6 @@
             background-position: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
-
-        /* 상세 정보 블록 */
         .info-block {
             text-align: left;
             margin-bottom: 25px;
@@ -193,8 +167,6 @@
             line-height: 1.7;
             color: var(--text-muted);
         }
-
-        /* 계좌 복사 버튼 */
         .accordion-btn {
             width: 100%;
             background: rgba(255, 255, 255, 0.9);
@@ -211,8 +183,6 @@
             margin-bottom: 12px;
         }
         .accordion-btn:active { background: #fff; transform: scale(0.98); }
-        
-        /* 토스트 알림 */
         #toast {
             position: fixed;
             bottom: -100px;
@@ -227,7 +197,6 @@
             transition: bottom 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
         }
         #toast.show { bottom: 50px; }
-
         @keyframes scrollDown {
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(15px); opacity: 0; }
@@ -239,7 +208,6 @@
 <canvas id="particle-canvas"></canvas>
 
 <div id="app">
-    
     <div class="hero">
         <div class="hero-bg"></div>
         <div class="hero-gradient"></div>
@@ -293,15 +261,17 @@
 
     <div class="glass-panel observe-target">
         <h2 class="section-title en-font">Location</h2>
-        <div style="width: 100%; height: 220px; background: #e9e5df; border-radius: 15px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 0.9rem;">
-            Map Area
-        </div>
+        <div id="map-area" style="width: 100%; height: 250px; border-radius: 12px; margin-bottom: 25px;"></div>
         <div style="text-align: left; margin-bottom: 30px;">
             <h3 style="font-size: 1.25rem; margin-bottom: 10px;">대전 씨엘드포레</h3>
             <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">
                 대전광역시 동구 동서대로 1700, 7층<br>
                 (선샤인호텔)
             </p>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+            <button onclick="openKakaoMap()" style="flex: 1; padding: 12px; border: none; border-radius: 8px; background: #fee500; color: #000; font-weight: bold; cursor: pointer;">카카오맵</button>
+            <button onclick="openNaverMap()" style="flex: 1; padding: 12px; border: none; border-radius: 8px; background: #03c75a; color: #fff; font-weight: bold; cursor: pointer;">네이버지도</button>
         </div>
         <div class="info-block">
             <h4>주차 안내</h4>
@@ -336,7 +306,6 @@
 <div id="toast">복사되었습니다.</div>
 
 <script>
-    // 스크롤 애니메이션 제어
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -347,7 +316,6 @@
 
     document.querySelectorAll('.observe-target').forEach(el => observer.observe(el));
 
-    // 계좌 복사 및 토스트 알림
     function copyToClipboard(text) {
         const el = document.createElement('textarea');
         el.value = text;
@@ -362,7 +330,6 @@
         setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // 캔버스 파티클 효과
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -399,6 +366,27 @@
     window.addEventListener('resize', init);
     init();
     animate();
+
+    window.onload = function() {
+        if(typeof kakao !== 'undefined') {
+            const mapContainer = document.getElementById('map-area');
+            const mapOption = { 
+                center: new kakao.maps.LatLng(36.35038, 127.43703),
+                level: 3
+            };
+            const map = new kakao.maps.Map(mapContainer, mapOption); 
+            const markerPosition  = new kakao.maps.LatLng(36.35038, 127.43703); 
+            const marker = new kakao.maps.Marker({ position: markerPosition });
+            marker.setMap(map);
+        }
+    };
+
+    function openKakaoMap() {
+        window.location.href = 'https://map.kakao.com/link/to/대전 씨엘드포레,36.35038,127.43703';
+    }
+    function openNaverMap() {
+        window.location.href = 'https://map.naver.com/v5/directions/-/-/14185200,4349180,대전 씨엘드포레,place';
+    }
 </script>
 
 </body>
