@@ -688,41 +688,52 @@
             margin-top: 32px;
         }
 
-        /* ================ GALLERY ================ */
+        /* ================ GALLERY (3x3 paged) ================ */
         .gallery-wrap {
             margin: 0 calc(var(--pad-card-x) * -1);
-            padding: 0 calc(var(--pad-card-x) - 14px);
+            padding: 0 var(--pad-card-x);
         }
         .gallery {
             display: flex;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
-            overscroll-behavior-x: contain;     /* don't bleed into page scroll */
-            gap: 12px;
-            padding: 4px 10px 14px;
+            overscroll-behavior-x: contain;
             scrollbar-width: none;
             -webkit-overflow-scrolling: touch;
         }
         .gallery::-webkit-scrollbar { display: none; }
-        .gallery-item {
+
+        .gallery-page {
+            flex: 0 0 100%;
             scroll-snap-align: center;
-            scroll-snap-stop: always;            /* one slide per swipe, never skip */
-            flex: 0 0 78%;
-            aspect-ratio: 3/4;
-            border-radius: 6px;
-            background-color: var(--bg-card-soft);
+            scroll-snap-stop: always;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 6px;
+            aspect-ratio: 1;          /* keep cells square */
+            padding: 4px 2px 6px;
+        }
+        .gallery-item {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            background-color: var(--accent-faint);
             background-size: cover;
             background-position: center;
-            box-shadow: 0 6px 20px rgba(60,50,30,0.10);
-            transition: opacity 0.5s ease, transform 0.2s ease;
             cursor: zoom-in;
             -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 2px 6px rgba(60,50,30,0.10);
+            transition: transform 0.18s ease;
+            overflow: hidden;
         }
-        .gallery-item:active { transform: scale(0.98); }
+        .gallery-item:active { transform: scale(0.96); }
+        .gallery-item.empty {
+            visibility: hidden;
+            pointer-events: none;
+        }
 
         /* Lazy items show a shimmering placeholder until image loads */
         .gallery-item.lazy:not(.loaded) {
-            background-color: var(--accent-faint);
             background-image: linear-gradient(
                 110deg,
                 var(--accent-faint) 25%,
@@ -1446,14 +1457,7 @@
         </div>
 
         <div class="gallery-wrap">
-            <div class="gallery" id="gallery">
-                <div class="gallery-item" style="background-image: url('./1.jpg');"></div>
-                <div class="gallery-item lazy" data-src="./2.jpg"></div>
-                <div class="gallery-item lazy" data-src="./3.jpg"></div>
-                <div class="gallery-item lazy" data-src="./4.jpg"></div>
-                <div class="gallery-item lazy" data-src="./5.jpg"></div>
-                <div class="gallery-item lazy" data-src="./6.jpg"></div>
-            </div>
+            <div class="gallery" id="gallery"></div>
         </div>
 
         <div class="gallery-dots" id="gallery-dots"></div>
@@ -1662,10 +1666,24 @@ const io = new IntersectionObserver((entries) => {
 }, { threshold: 0.12 });
 document.querySelectorAll('.observe-target').forEach(el => io.observe(el));
 
-/* ---------- Lazy-load gallery ---------- */
-const lazyIO = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-        if (e.isIntersecting) {
+/* ---------- Lazy-load gallery (3x3 paged) ---------- */
+const PHOTOS = Array.from({ length: 22 }, (_, i) => `./${i + 1}.jpg`);
+const PAGE_SIZE = 9;
+
+function buildGallery() {
+    const gallery = document.getElementById('gallery');
+    const dotsEl = document.getElementById('gallery-dots');
+    if (!gallery) return;
+
+    gallery.innerHTML = '';
+    dotsEl.innerHTML = '';
+
+    const totalPages = Math.ceil(PHOTOS.length / PAGE_SIZE);
+
+    /* IO scoped to gallery viewport — only photos in current/adjacent page load */
+    const galleryIO = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
             const el = e.target;
             const src = el.dataset.src;
             if (!src) return;
@@ -1675,11 +1693,55 @@ const lazyIO = new IntersectionObserver((entries) => {
                 el.classList.add('loaded');
             };
             img.src = src;
-            lazyIO.unobserve(el);
+            galleryIO.unobserve(el);
+        });
+    }, { root: gallery, rootMargin: '0px 200px' });
+
+    /* Build pages */
+    for (let p = 0; p < totalPages; p++) {
+        const page = document.createElement('div');
+        page.className = 'gallery-page';
+
+        for (let cell = 0; cell < PAGE_SIZE; cell++) {
+            const idx = p * PAGE_SIZE + cell;
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+
+            if (idx < PHOTOS.length) {
+                item.classList.add('lazy');
+                item.dataset.src = PHOTOS[idx];
+                item.addEventListener('click', () => lightbox.open(PHOTOS, idx));
+                galleryIO.observe(item);
+            } else {
+                item.classList.add('empty');
+            }
+            page.appendChild(item);
         }
-    });
-}, { rootMargin: '300px' });
-document.querySelectorAll('.gallery-item.lazy').forEach(el => lazyIO.observe(el));
+        gallery.appendChild(page);
+    }
+
+    /* Page indicator dots (one per page, not per photo) */
+    for (let p = 0; p < totalPages; p++) {
+        const dot = document.createElement('span');
+        if (p === 0) dot.classList.add('active');
+        dotsEl.appendChild(dot);
+    }
+
+    /* Sync dot to current page on scroll */
+    let scrollTimer;
+    gallery.addEventListener('scroll', () => {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+            const pageWidth = gallery.clientWidth;
+            const currentPage = Math.round(gallery.scrollLeft / pageWidth);
+            dotsEl.querySelectorAll('span').forEach((d, i) => {
+                d.classList.toggle('active', i === currentPage);
+            });
+        }, 60);
+    }, { passive: true });
+}
+
+/* buildGallery() invoked after lightbox is defined — see end of script */
 
 /* ---------- Toast ---------- */
 function showToast(msg) {
@@ -1818,28 +1880,6 @@ function copyURL() {
     showToast('청첩장 주소가 복사되었습니다');
 }
 
-/* ---------- Gallery dots ---------- */
-(function () {
-    const gallery = document.getElementById('gallery');
-    const items = gallery.querySelectorAll('.gallery-item');
-    const dotsWrap = document.getElementById('gallery-dots');
-    items.forEach((_, i) => {
-        const d = document.createElement('span');
-        if (i === 0) d.classList.add('active');
-        dotsWrap.appendChild(d);
-    });
-    const dots = dotsWrap.querySelectorAll('span');
-    let raf = null;
-    gallery.addEventListener('scroll', () => {
-        if (raf) return;
-        raf = requestAnimationFrame(() => {
-            const idx = Math.round(gallery.scrollLeft / (gallery.scrollWidth / items.length));
-            dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-            raf = null;
-        });
-    });
-})();
-
 /* ---------- Particle background ---------- */
 (function () {
     const canvas = document.getElementById('particle-canvas');
@@ -1966,25 +2006,15 @@ const lightbox = (function () {
     return { open, close, next, prev };
 })();
 
-/* ---------- Wire gallery → lightbox ---------- */
-(function () {
-    const items = document.querySelectorAll('.gallery .gallery-item');
-    const urls = Array.from(items).map(item => {
-        if (item.dataset.src) return item.dataset.src;
-        const m = item.style.backgroundImage.match(/url\(["']?(.+?)["']?\)/);
-        return m ? m[1] : '';
-    });
-    items.forEach((item, i) => {
-        item.addEventListener('click', () => lightbox.open(urls, i));
-    });
-})();
-
 /* ---------- Map lightbox ---------- */
 function openMapLightbox() {
     lightbox.open(['./MAP.PNG'], 0);
 }
 
 function openKakaoMap() { window.location.href = 'https://kko.to/Cz7NTucMla'; }
+
+/* Build the 3x3 paged gallery now that lightbox is defined */
+buildGallery();
 function openNaverMap() { window.location.href = 'https://naver.me/x67ywAmF'; }
 </script>
 
