@@ -134,6 +134,19 @@
         }
         .card.visible { opacity: 1; transform: translateY(0); }
 
+        /* Subtle hover lift on desktop / pointer devices only */
+        @media (hover: hover) and (pointer: fine) {
+            .card {
+                transition: opacity 1s cubic-bezier(0.22,1,0.36,1),
+                            transform 0.45s cubic-bezier(0.22,1,0.36,1),
+                            box-shadow 0.45s cubic-bezier(0.22,1,0.36,1);
+            }
+            .card.visible:hover {
+                transform: translateY(-3px);
+                box-shadow: var(--shadow-card-deep);
+            }
+        }
+
         /* ================ HERO (split layout) ================ */
         .hero {
             position: relative;
@@ -217,9 +230,9 @@
         .hero-names .amp {
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
-            font-size: 1.4rem;
+            font-size: 1.55rem;
             color: var(--accent);
-            font-weight: 300;
+            font-weight: 400;
         }
         .hero-date {
             font-size: var(--fz-micro);
@@ -267,12 +280,26 @@
         }
         .section-header .card-num {
             display: block;
-            font-family: 'Italiana', serif;
-            font-size: 0.78rem;
-            letter-spacing: 0.42em;
+            /* Cormorant italic — supports real font-weight, much more legible at small sizes */
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 500;
+            font-size: 1.15rem;
+            letter-spacing: 0.04em;
             color: var(--accent);
-            opacity: 0.72;
-            margin-bottom: 18px;
+            margin-bottom: 10px;
+            font-feature-settings: "lnum";
+            opacity: 0.9;
+        }
+        /* Small vertical rule between card number and en title (editorial detail) */
+        .section-header .en::before {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 14px;
+            background: var(--accent);
+            opacity: 0.45;
+            margin: 0 auto 14px;
         }
         .section-header .en {
             font-family: 'Italiana', serif;
@@ -281,7 +308,6 @@
             color: var(--accent);
             display: inline-block;
             text-transform: uppercase;
-            /* Stroke gives the thin Italiana glyphs visible weight */
             -webkit-text-stroke: 0.4px currentColor;
             text-stroke: 0.4px currentColor;
         }
@@ -312,20 +338,21 @@
         /* ================ INVITATION ================ */
         .invitation-body {
             font-size: var(--fz-body);
-            line-height: 2.15;
+            line-height: 2.2;
             color: var(--ink-secondary);
             font-weight: 450;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             word-break: keep-all;
         }
-        /* Parents — two rows share ONE grid via display: contents,
-           so columns are perfectly aligned across rows */
+        /* Parents — two rows share ONE grid via display: contents.
+           grid-template uses max-content so columns hug their text;
+           justify-content: center then puts the whole grid at page center. */
         .parents {
             display: grid;
-            grid-template-columns: 1fr auto 1fr;
+            grid-template-columns: max-content auto max-content;
+            justify-content: center;
             column-gap: 14px;
             row-gap: 12px;
-            max-width: 320px;
             margin: 8px auto 0;
             align-items: baseline;
         }
@@ -363,7 +390,7 @@
         .contact-toggle {
             margin-top: 28px;
             border-top: 1px solid var(--rule-line);
-            padding-top: 22px;
+            padding-top: 24px;
         }
         .contact-toggle summary {
             list-style: none;
@@ -371,20 +398,26 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            font-family: 'Italiana', serif;
-            font-size: var(--fz-tiny);
-            letter-spacing: 0.3em;
+            gap: 10px;
+            font-family: 'Noto Serif KR', serif;
+            font-size: var(--fz-small);
+            font-weight: 600;
+            letter-spacing: 0.15em;
             color: var(--accent);
-            text-transform: uppercase;
-            padding: 8px 14px;
+            padding: 10px 20px;
+            border-radius: 999px;
+            border: 1.5px solid var(--accent-soft);
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
         }
         .contact-toggle summary::-webkit-details-marker { display: none; }
+        .contact-toggle summary:active { background: var(--accent-faint); transform: scale(0.98); }
         .contact-toggle summary .chev {
             font-style: italic;
             font-family: 'Cormorant Garamond', serif;
             transition: transform 0.3s ease;
-            font-size: 0.85rem;
+            font-size: 1rem;
+            font-weight: 500;
         }
         .contact-toggle[open] summary .chev { transform: rotate(90deg); }
         .contact-body {
@@ -483,8 +516,8 @@
         .dday-num {
             font-family: 'Cormorant Garamond', serif;
             font-size: var(--fz-display);
-            font-weight: 400;
-            letter-spacing: 0.04em;
+            font-weight: 500;
+            letter-spacing: 0.02em;
             color: var(--accent);
             line-height: 1;
             font-feature-settings: "lnum";
@@ -519,7 +552,7 @@
             font-weight: 500;
         }
         .cal-month {
-            font-size: 1.5rem;
+            font-size: 1.55rem;
             font-style: italic;
             font-weight: 500;
             color: var(--accent);
@@ -664,11 +697,11 @@
         .gallery-dots {
             display: flex;
             justify-content: center;
-            gap: 6px;
-            margin-top: 18px;
+            gap: 7px;
+            margin-top: 22px;
         }
         .gallery-dots span {
-            width: 5px; height: 5px;
+            width: 6px; height: 6px;
             border-radius: 50%;
             background: var(--ink-faint);
             transition: all 0.3s ease;
@@ -726,11 +759,17 @@
         .venue { text-align: left; margin-bottom: 22px; }
         .venue h3 {
             font-size: var(--fz-h2);
-            font-weight: 500;
-            letter-spacing: 0.05em;
-            margin-bottom: 6px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+            color: var(--ink-primary);
         }
-        .venue p { font-size: var(--fz-small); color: var(--ink-secondary); line-height: 1.7; }
+        .venue p {
+            font-size: var(--fz-small);
+            color: var(--ink-secondary);
+            line-height: 1.85;
+            font-weight: 400;
+        }
 
         .map-buttons {
             display: grid;
@@ -1125,7 +1164,7 @@
 
         <details class="contact-toggle">
             <summary>
-                <span>Contact</span>
+                <span>연락처 보기</span>
                 <span class="chev">›</span>
             </summary>
             <div class="contact-body">
@@ -1214,7 +1253,6 @@
         <div class="section-header">
             <span class="card-num">03</span>
             <span class="en">Gallery</span>
-            <span class="ko-sub">우리의 순간들</span>
         </div>
 
         <div class="gallery-wrap">
@@ -1229,7 +1267,6 @@
         </div>
 
         <div class="gallery-dots" id="gallery-dots"></div>
-        <p class="gallery-hint">좌우로 넘겨보세요</p>
     </section>
 
     <!-- ============ 04 LOCATION ============ -->
