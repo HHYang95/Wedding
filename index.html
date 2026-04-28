@@ -657,13 +657,12 @@
             font-feature-settings: "lnum", "tnum";
         }
         .cal-day {
-            aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--ink-secondary);
             position: relative;
-            max-width: 44px;
+            height: 40px;
             margin: 0 auto;
         }
         .cal-day.sunday { color: var(--sunday); }
@@ -673,16 +672,15 @@
             font-weight: 500;
             isolation: isolate;
         }
-        /* Circle is centered + size-locked so it never escapes the cell */
+        /* Fixed-size circle — width and height in px guarantees a perfect circle on every browser,
+           sidestepping iOS Safari's aspect-ratio quirks inside grid tracks. */
         .cal-day.current::before {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 84%;
-            height: 84%;
-            max-width: 36px;
-            max-height: 36px;
+            width: 32px;
+            height: 32px;
             transform: translate(-50%, -50%);
             background: var(--accent);
             border-radius: 50%;
