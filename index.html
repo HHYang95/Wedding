@@ -133,15 +133,22 @@
             content: '';
             position: fixed; inset: 0;
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0.55  0 0 0 0 0.45  0 0 0 0 0.30  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-            opacity: 0.5;
+            opacity: 0.18;                       /* fallback — visible but very subtle */
             pointer-events: none;
             z-index: 1;
-            mix-blend-mode: multiply;
+        }
+        @supports (mix-blend-mode: multiply) {
+            body::before {
+                opacity: 0.5;
+                mix-blend-mode: multiply;
+            }
         }
 
         #particle-canvas {
             position: fixed; inset: 0;
-            width: 100vw; height: 100vh;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
             z-index: 2;
             pointer-events: none;
         }
@@ -152,6 +159,7 @@
             width: 100%;
             max-width: 460px;
             min-height: 100vh;
+            min-height: 100dvh;
             padding-bottom: calc(60px + var(--safe-bottom));
         }
 
@@ -570,24 +578,18 @@
             font-feature-settings: "lnum";
         }
         .dday-text {
-            font-family: 'Italiana', serif;
-            font-size: 0.74rem;
-            letter-spacing: 0.32em;
+            font-family: 'Noto Serif KR', serif;
+            font-size: var(--fz-small);
+            letter-spacing: 0.18em;
             margin-top: 12px;
             color: var(--ink-secondary);
-            text-transform: uppercase;
-            -webkit-text-stroke: 0.25px currentColor;
+            font-weight: 500;
         }
-        /* Korean text for imminent/today/past phases — non-uppercase, less letter-spacing */
+        /* Imminent / today / past — slightly tighter spacing for longer Korean phrases */
         .dday-imminent .dday-text,
         .dday-today    .dday-text,
         .dday-past     .dday-text {
-            font-family: 'Noto Serif KR', serif;
-            font-size: var(--fz-small);
             letter-spacing: 0.12em;
-            text-transform: none;
-            font-weight: 500;
-            -webkit-text-stroke: 0;
             margin-top: 14px;
         }
         /* Wedding day — celebratory accent */
@@ -863,13 +865,18 @@
             position: absolute;
             top: 12px; right: 12px;
             width: 32px; height: 32px;
-            background: rgba(255,253,248,0.88);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(255,253,248,0.96);   /* fallback — almost opaque */
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             pointer-events: none;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        @supports ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
+            .map-zoom-hint {
+                background: rgba(255,253,248,0.78);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
         }
         .map-zoom-hint svg {
             width: 14px; height: 14px;
@@ -1122,7 +1129,7 @@
             position: absolute;
             width: 48px; height: 48px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.10);
+            background: rgba(40,35,28,0.62);             /* fallback — visible without blur */
             border: 1px solid rgba(255,255,255,0.22);
             color: rgba(255,255,255,0.95);
             cursor: pointer;
@@ -1133,8 +1140,13 @@
             z-index: 2;
             padding: 0;
             -webkit-tap-highlight-color: transparent;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+        }
+        @supports ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
+            .lightbox-btn {
+                background: rgba(255,255,255,0.10);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
         }
         .lightbox-btn:active { background: rgba(255,255,255,0.22); }
         .lightbox-btn svg {
@@ -1241,7 +1253,7 @@
             align-items: center;
             justify-content: center;
             opacity: 1;
-            transition: opacity 1.1s cubic-bezier(0.45, 0, 0.55, 1);
+            transition: opacity 0.8s cubic-bezier(0.45, 0, 0.55, 1);
         }
         #intro-overlay.fade-out {
             opacity: 0;
@@ -1254,9 +1266,14 @@
             content: '';
             position: absolute; inset: 0;
             background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0.55  0 0 0 0 0.45  0 0 0 0 0.30  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-            opacity: 0.5;
+            opacity: 0.18;
             pointer-events: none;
-            mix-blend-mode: multiply;
+        }
+        @supports (mix-blend-mode: multiply) {
+            #intro-overlay::before {
+                opacity: 0.5;
+                mix-blend-mode: multiply;
+            }
         }
 
         .intro-content {
@@ -1491,7 +1508,7 @@
 
         <div class="dday-wrap">
             <div class="dday-num" id="dday">D-—</div>
-            <div class="dday-text" id="dday-text">until our wedding</div>
+            <div class="dday-text" id="dday-text">결혼식까지 남은 날</div>
         </div>
 
         <div class="calendar">
@@ -1702,8 +1719,8 @@
         return;
     }
 
-    const FADE_OUT_AT = 2600;   /* show duration */
-    const REMOVE_AT   = 3700;   /* fade-out duration ~1.1s */
+    const FADE_OUT_AT = 2000;   /* hold duration (~0.5s after animation completes) */
+    const REMOVE_AT   = 2800;   /* total intro length — fade-out 0.8s */
 
     const fadeTimer = setTimeout(() => {
         overlay.classList.add('fade-out');
@@ -1750,6 +1767,17 @@ document.querySelectorAll('.observe-target').forEach(el => io.observe(el));
 
 /* ---------- Lazy-load gallery (3x3 paged) ---------- */
 const PHOTOS = Array.from({ length: 22 }, (_, i) => `./${i + 1}.jpg`);
+/* Per-photo background-position overrides for grid (lightbox unaffected — uses object-fit: contain).
+   Format: 1-indexed photo number → CSS background-position value.
+   Lower y-percentage = head shows more, feet crop more. */
+const PHOTO_POSITIONS = {
+    2: 'center 25%',
+    3: 'center 25%',
+    4: 'center 25%',
+    5: 'center 25%',
+    10: 'center 25%',
+    16: 'center 25%'
+};
 const PAGE_SIZE = 9;
 
 function buildGallery() {
@@ -1792,6 +1820,9 @@ function buildGallery() {
             if (idx < PHOTOS.length) {
                 item.classList.add('lazy');
                 item.dataset.src = PHOTOS[idx];
+                /* Per-photo position override (e.g., portraits where the head is cropped) */
+                const pos = PHOTO_POSITIONS[idx + 1];
+                if (pos) item.style.backgroundPosition = pos;
                 item.setAttribute('role', 'button');
                 item.setAttribute('tabindex', '0');
                 item.setAttribute('aria-label', `사진 ${idx + 1} 크게 보기`);
@@ -1890,7 +1921,7 @@ function updateDDay() {
     if (diff > 7) {
         /* Normal countdown */
         numEl.textContent  = `D-${diff}`;
-        if (textEl) textEl.textContent = 'until our wedding';
+        if (textEl) textEl.textContent = '결혼식까지 남은 날';
     } else if (diff > 1) {
         /* Within a week — emphasize */
         numEl.textContent  = `D-${diff}`;
