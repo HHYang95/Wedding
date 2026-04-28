@@ -92,26 +92,31 @@
             top: 0; left: 0; right: 0; bottom: 0;
             background-image: url('./8F1A5624.JPG'); 
             background-size: cover;
-            background-position: center 20%;
+            background-position: center center; /* 사진 중앙 정렬 */
             z-index: -2;
         }
+        
+        /* 사진이 잘 보이도록 상단~중단 투명하게, 하단만 살짝 하얗게 */
         .hero-gradient {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,1) 100%);
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.6) 80%, rgba(255,255,255,1) 100%);
             z-index: -1;
         }
+        
+        /* 텍스트 박스: 투명도 높이고 테두리는 남겨 유리 느낌 극대화 */
         .hero-text-box {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.5); 
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             border-radius: 20px;
-            padding: 40px 20px;
-            width: 85%;
+            padding: 30px 15px;
+            width: 90%;
             margin: 0 auto;
         }
+
         .divider {
             width: 1px;
             height: 60px;
@@ -210,7 +215,8 @@
     <div class="hero">
         <div class="hero-bg"></div>
         <div class="hero-gradient"></div>
-        <div style="z-index: 10; padding-top: 40vh; width: 100%;">
+        
+        <div style="position: absolute; bottom: 12%; width: 100%; z-index: 10;">
             <div class="hero-text-box">
                 <p class="en-font" style="color: var(--gold); letter-spacing: 0.25em; margin-bottom: 15px; font-size: 0.85rem; font-weight: 600;">WEDDING INVITATION</p>
                 <h1 style="font-family: 'Noto Serif KR', serif; font-size: 1.8rem; font-weight: 500; color: #2c2c2c; margin-bottom: 25px; display: flex; justify-content: center; align-items: center; gap: 10px;">
@@ -218,13 +224,14 @@
                     <span class="en-font" style="font-size: 0.9em; color: var(--gold);">&amp;</span>
                     <span>박수진</span>
                 </h1>
-                <p class="en-font" style="font-size: 1rem; letter-spacing: 0.15em; color: #444; margin-bottom: 10px;">2026. 10. 03. SAT 11:00 AM</p>
+                <p class="en-font" style="font-size: 1rem; letter-spacing: 0.15em; color: #444; margin-bottom: 8px;">2026. 10. 03. SAT 11:00 AM</p>
                 <p style="font-size: 0.95rem; color: #2c2c2c; font-weight: 500;">대전 씨엘드포레 웨딩홀 7층</p>
             </div>
         </div>
-        <div style="position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); z-index: 10;">
-            <p class="en-font" style="font-size: 0.7rem; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 12px;">SCROLL</p>
-            <div style="width: 1px; height: 35px; background: var(--text-main); margin: 0 auto; animation: scrollDown 2s infinite;"></div>
+        
+        <div style="position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); z-index: 10;">
+            <p class="en-font" style="font-size: 0.65rem; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 10px;">SCROLL</p>
+            <div style="width: 1px; height: 30px; background: var(--text-main); margin: 0 auto; animation: scrollDown 2s infinite;"></div>
         </div>
     </div>
 
@@ -368,7 +375,6 @@
     init();
     animate();
 
-    // 💡 가장 안전한 지도 초기화 방식
     window.addEventListener('load', function() {
         setTimeout(function() {
             if (typeof kakao !== 'undefined' && kakao.maps) {
@@ -382,7 +388,6 @@
                 const marker = new kakao.maps.Marker({ position: markerPosition });
                 marker.setMap(map);
 
-                // 지도 로딩이 성공하면 임시 문구 숨김
                 document.getElementById('map-placeholder').style.display = 'none';
             } else {
                 document.getElementById('map-placeholder').innerHTML = "카카오맵을 불러올 수 없습니다.<br>PC나 스마트폰 브라우저 환경에서 확인해주세요.";
