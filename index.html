@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    
+    <title>Ethereal Wedding | 양현호 & 박수진</title>
+    
+    <meta property="og:title" content="양현호 & 박수진 결혼합니다">
+    <meta property="og:description" content="2026년 10월 3일 오전 11시 | 대전 씨엘드포레">
+    <meta property="og:image" content="./8F1A5135.jpg">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* 4. 브라우저 차원의 라이트 모드 강제 */
+            color-scheme: light;
+            --gold: #d4af37;
+            --gold-light: #f3e5ab;
+            --text-main: #2c2c2c;
+            --text-muted: #5a5a5a;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-shadow: rgba(139, 126, 102, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Noto Serif KR', serif;
+            color: var(--text-main);
+            /* 배경 그라데이션 애니메이션 */
+            background: linear-gradient(-45deg, #fdfbfb, #f3e5ab, #ffffff, #eaddcf);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 1;
+            pointer-events: none; 
+        }
+
+        #app {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 480px; 
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 var(--glass-shadow);
+            margin: 20px;
+            padding: 45px 30px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            transition: all 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .glass-panel.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .en-font { font-family: 'Playfair Display', serif; }
+        
+        /* 커버 섹션 (2번 사진) */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        .hero-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('./8F1A4594.jpg'); 
+            background-size: cover;
+            background-position: center 20%;
+            z-index: -2;
+        }
+        .hero-gradient {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.7) 65%, rgba(255,255,255,1) 100%);
+            z-index: -1;
+        }
+
+        .hero-title {
+            font-size: 2.6rem;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        .hero-date {
+            font-size: 1.1rem;
+            letter-spacing: 0.15em;
+            color: var(--gold);
+            margin-bottom: 40px;
+        }
+
+        .divider {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+            margin: 30px auto;
+        }
+
+        h2.section-title {
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 35px;
+            letter-spacing: 0.15em;
+        }
+
+        .paragraph {
+            font-size: 1rem;
+            line-height: 2.2;
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            word-break: keep-all;
+        }
+
+        /* 갤러리 가로 스크롤 */
+        .gallery-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 15px;
+            padding-bottom: 15px;
+            scrollbar-width: none; 
+        }
+        .gallery-container::-webkit-scrollbar { display: none; } 
+        
+        .gallery-item {
+            scroll-snap-align: center;
+            flex: 0 0 85%;
+            height: 480px;
+            border-radius: 16px;
+            background-color: #f7f7f7;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        /* 상세 정보 블록 */
+        .info-block {
+            text-align: left;
+            margin-bottom: 25px;
+            padding: 18px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 12px;
+            border-left: 3px solid var(--gold-light);
+        }
+        .info-block h4 {
+            font-size: 1rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        .info-block p {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+        }
+
+        /* 계좌 복사 버튼 */
+        .accordion-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--gold-light);
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1rem;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+        .accordion-btn:active { background: #fff; transform: scale(0.98); }
+        
+        /* 토스트 알림 */
+        #toast {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 35px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            transition: bottom 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        #toast.show { bottom: 50px; }
+
+        @keyframes scrollDown {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(15px); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<div id="app">
+    
+    <div class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-gradient"></div>
+        <div style="z-index: 10; padding-top: 40vh;">
+            <p class="en-font" style="color: var(--gold); letter-spacing: 0.3em; margin-bottom: 20px;">WEDDING INVITATION</p>
+            <h1 class="hero-title en-font">
+                <span style="font-size: 0.55em; display: block; margin-bottom: 10px; font-family: 'Noto Serif KR', serif;">양현호</span>
+                <span style="font-style: italic; color: var(--gold);">&amp;</span>
+                <span style="font-size: 0.55em; display: block; margin-top: 10px; font-family: 'Noto Serif KR', serif;">박수진</span>
+            </h1>
+            <div class="divider"></div>
+            <p class="hero-date en-font">2026. 10. 03. SAT 11:00 AM</p>
+            <p style="font-size: 1rem; color: var(--text-main); font-weight: 500;">대전 씨엘드포레 웨딩홀 7층</p>
+        </div>
+        <div style="position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); z-index: 10;">
+            <p class="en-font" style="font-size: 0.7rem; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 12px;">SCROLL</p>
+            <div style="width: 1px; height: 35px; background: var(--text-main); margin: 0 auto; animation: scrollDown 2s infinite;"></div>
+        </div>
+    </div>
+
+    <div class="glass-panel observe-target">
+        <h2 class="section-title en-font">Invitation</h2>
+        <p class="paragraph">
+            어느덧 피어난 대청호의 물결처럼<br>
+            자연스레 스며든 두 사람입니다.<br><br>
+            수많은 우연이 겹쳐 인연이 되었고,<br>
+            이제 그 인연을 평생으로 이어가려 합니다.<br><br>
+            귀한 시간 내어주시어<br>
+            저희의 출발을 축복해 주시면<br>
+            더없는 기쁨으로 간직하겠습니다.
+        </p>
+        <div class="divider" style="height: 35px;"></div>
+        <div style="font-size: 1.15rem; line-height: 2.2;">
+            <p><span style="font-size: 0.9rem; color: #888; margin-right: 12px;">양문규 · 조미라 의 아들</span> <b>현호</b></p>
+            <p><span style="font-size: 0.9rem; color: #888; margin-right: 12px;">박복용 · 진옥영 의 &nbsp;&nbsp;딸</span> <b>수진</b></p>
+        </div>
+    </div>
+
+    <div class="glass-panel observe-target">
+        <h2 class="section-title en-font">Gallery</h2>
+        <div class="gallery-container">
+            <div class="gallery-item" style="background-image: url('./8F1A4882.jpg');"></div>
+            <div class="gallery-item" style="background-image: url('./8F1A4913.jpg');"></div>
+            <div class="gallery-item" style="background-image: url('./8F1A5275.jpg');"></div>
+            <div class="gallery-item" style="background-image: url('./8F1A5443.jpg');"></div>
+            <div class="gallery-item" style="background-image: url('./8F1A5668.jpg');"></div>
+            <div class="gallery-item" style="background-image: url('./8F1A6152.jpg');"></div>
+        </div>
+        <p style="font-size: 0.85rem; color: #aaa; margin-top: 15px;">좌우로 넘겨보세요</p>
+    </div>
+
+    <div class="glass-panel observe-target">
+        <h2 class="section-title en-font">Location</h2>
+        <div style="width: 100%; height: 220px; background: #e9e5df; border-radius: 15px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; color: var(--gold); font-size: 0.9rem;">
+            Map Area
+        </div>
+        <div style="text-align: left; margin-bottom: 30px;">
+            <h3 style="font-size: 1.25rem; margin-bottom: 10px;">대전 씨엘드포레</h3>
+            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">
+                대전광역시 동구 동서대로 1700, 7층<br>
+                (선샤인호텔)
+            </p>
+        </div>
+        <div class="info-block">
+            <h4>주차 안내</h4>
+            <p>복합터미널 맞은편 투썸플레이스 옆 주차장 입구<br>선샤인호텔 전용 주차장 이용 가능</p>
+        </div>
+        <div class="info-block">
+            <h4>버스 / 지하철</h4>
+            <p>버스: 102, 105, 106, 201, 501, 601, 602, 607, 611, 616, 701, 802, 2(급행)</p>
+        </div>
+        <div class="info-block">
+            <h4>고속 / 시외버스</h4>
+            <p>대전복합터미널 하차 후 맞은편 도보 3분 거리</p>
+        </div>
+    </div>
+
+    <div class="glass-panel observe-target" style="margin-bottom: 100px;">
+        <h2 class="section-title en-font">Heartfelt Thanks</h2>
+        <p style="font-size: 0.95rem; margin-bottom: 30px; color: var(--text-muted);">
+            저희의 새로운 시작을 축복해주시는<br>따뜻한 마음 감사히 받겠습니다.
+        </p>
+        <button class="accordion-btn" onclick="copyToClipboard('신한은행 110425018705 양현호')">
+            <span>신랑 양현호 계좌번호</span>
+            <span class="en-font" style="color: var(--gold); font-size: 0.8rem;">Copy</span>
+        </button>
+        <button class="accordion-btn" onclick="copyToClipboard('하나은행 67391031093307 박수진')">
+            <span>신부 박수진 계좌번호</span>
+            <span class="en-font" style="color: var(--gold); font-size: 0.8rem;">Copy</span>
+        </button>
+    </div>
+</div>
+
+<div id="toast">복사되었습니다.</div>
+
+<script>
+    // 스크롤 애니메이션 제어
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.observe-target').forEach(el => observer.observe(el));
+
+    // 계좌 복사 및 토스트 알림
+    function copyToClipboard(text) {
+        const el = document.createElement('textarea');
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+
+        const toast = document.getElementById('toast');
+        toast.innerText = text.split(' ')[0] + " 계좌가 복사되었습니다.";
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // 캔버스 파티클 효과
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function init() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        particles = [];
+        const count = window.innerWidth < 600 ? 40 : 80;
+        for (let i = 0; i < count; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 0.5,
+                speedY: -(Math.random() * 0.5 + 0.2),
+                opacity: Math.random() * 0.5 + 0.1
+            });
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.y += p.speedY;
+            if (p.y < 0) p.y = canvas.height;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(212, 175, 55, ${p.opacity})`;
+            ctx.fill();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', init);
+    init();
+    animate();
+</script>
+
+</body>
+</html>
