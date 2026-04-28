@@ -11,7 +11,9 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="양현호 & 박수진 결혼합니다">
     <meta property="og:description" content="2026년 10월 3일 토요일 오전 11시 · 대전 씨엘드포레">
-    <meta property="og:image" content="./8F1A5624.JPG">
+    <!-- IMPORTANT: og:image must be ABSOLUTE URL for KakaoTalk/Slack/Discord previews -->
+    <meta property="og:image" content="https://hhyang95.github.io/Wedding/8F1A5624.JPG">
+    <meta property="og:url" content="https://hhyang95.github.io/Wedding/">
 
     <!-- Hero image preload for fast LCP -->
     <link rel="preload" as="image" href="./8F1A5624.JPG" fetchpriority="high">
@@ -19,8 +21,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Italiana&family=Noto+Serif+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=4d7ecd1f497c03701268ff3494996a6c&autoload=false&libraries=services"></script>
 
     <style>
         :root {
@@ -375,11 +375,22 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 0;
+            padding: 12px 0;
             border-bottom: 1px solid var(--rule-line);
+            gap: 12px;
         }
         .contact-row:last-child { border-bottom: 0; padding-bottom: 0; }
-        .contact-row > div:first-child { display: flex; align-items: baseline; gap: 10px; }
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 0;
+        }
+        .contact-meta {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
         .contact-rel {
             font-size: var(--fz-tiny);
             color: var(--ink-tertiary);
@@ -391,7 +402,14 @@
             color: var(--ink-primary);
             letter-spacing: 0.04em;
         }
-        .contact-actions { display: flex; gap: 6px; }
+        .contact-tel {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: var(--fz-tiny);
+            color: var(--ink-tertiary);
+            letter-spacing: 0.06em;
+            font-feature-settings: "lnum", "tnum";
+        }
+        .contact-actions { display: flex; gap: 6px; flex-shrink: 0; }
         .contact-btn {
             width: 36px; height: 36px;
             border-radius: 50%;
@@ -536,6 +554,7 @@
             display: flex;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
+            overscroll-behavior-x: contain;     /* don't bleed into page scroll */
             gap: 12px;
             padding: 4px 10px 14px;
             scrollbar-width: none;
@@ -544,6 +563,7 @@
         .gallery::-webkit-scrollbar { display: none; }
         .gallery-item {
             scroll-snap-align: center;
+            scroll-snap-stop: always;            /* one slide per swipe, never skip */
             flex: 0 0 78%;
             aspect-ratio: 3/4;
             border-radius: 6px;
@@ -551,8 +571,11 @@
             background-size: cover;
             background-position: center;
             box-shadow: 0 6px 20px rgba(60,50,30,0.10);
-            transition: opacity 0.5s ease;
+            transition: opacity 0.5s ease, transform 0.2s ease;
+            cursor: zoom-in;
+            -webkit-tap-highlight-color: transparent;
         }
+        .gallery-item:active { transform: scale(0.98); }
         .gallery-item.lazy { opacity: 0; }
         .gallery-item.lazy.loaded { opacity: 1; }
         .gallery-dots {
@@ -579,27 +602,42 @@
             margin-top: 14px;
         }
 
-        /* ================ LOCATION ================ */
-        .map-frame {
+        /* ================ LOCATION (custom map image) ================ */
+        .map-image-wrap {
             width: 100%;
-            aspect-ratio: 4/3;
+            background: var(--bg-card-soft);
             border-radius: var(--radius-inner);
             overflow: hidden;
-            position: relative;
-            background: var(--bg-card-soft);
-            margin-bottom: 22px;
             border: 1px solid var(--rule-line);
+            margin-bottom: 22px;
+            cursor: zoom-in;
+            position: relative;
+            transition: transform 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
         }
-        #map-area { position: absolute; inset: 0; }
-        #map-placeholder {
-            position: absolute; inset: 0;
+        .map-image-wrap:active { transform: scale(0.99); }
+        .map-image-wrap img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .map-zoom-hint {
+            position: absolute;
+            top: 12px; right: 12px;
+            width: 32px; height: 32px;
+            background: rgba(255,253,248,0.88);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            color: var(--ink-tertiary);
-            font-size: var(--fz-small);
-            text-align: center;
-            line-height: 1.6;
-            padding: 0 20px;
-            z-index: 1;
+            pointer-events: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .map-zoom-hint svg {
+            width: 14px; height: 14px;
+            fill: none;
+            stroke: var(--ink-secondary);
+            stroke-width: 1.5;
         }
         .venue { text-align: left; margin-bottom: 22px; }
         .venue h3 {
@@ -770,6 +808,131 @@
             stroke-width: 1.5;
         }
 
+        /* ================ RSVP ================ */
+        .rsvp-prompt {
+            font-size: var(--fz-small);
+            color: var(--ink-secondary);
+            margin-bottom: 28px;
+            line-height: 1.9;
+        }
+        .rsvp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border-radius: 999px;
+            background: var(--accent);
+            color: var(--bg-card);
+            font-family: 'Italiana', serif;
+            font-size: var(--fz-tiny);
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--accent);
+            min-height: 44px;
+            margin-bottom: 22px;
+        }
+        .rsvp-btn:active { transform: scale(0.98); background: #8e7448; }
+        .rsvp-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+        .rsvp-deadline {
+            font-size: var(--fz-tiny);
+            color: var(--ink-tertiary);
+            line-height: 1.8;
+            letter-spacing: 0.04em;
+        }
+        .rsvp-deadline span {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* ================ LIGHTBOX ================ */
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 13, 10, 0.97);
+            z-index: 9999;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #lightbox.open {
+            display: block;
+            opacity: 1;
+        }
+        .lightbox-stage {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: calc(70px + env(safe-area-inset-top)) 16px calc(70px + env(safe-area-inset-bottom));
+        }
+        #lightbox-img {
+            max-width: calc(100vw - 32px);
+            max-height: 100%;
+            object-fit: contain;
+            user-select: none;
+            -webkit-user-drag: none;
+            -webkit-touch-callout: none;
+            transition: transform 0.25s cubic-bezier(0.22,1,0.36,1), opacity 0.2s ease;
+            will-change: transform;
+        }
+        #lightbox-img.swiping { transition: none; }
+        .lightbox-btn {
+            position: absolute;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.18);
+            color: rgba(255,255,255,0.9);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+            z-index: 2;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .lightbox-btn:active { background: rgba(255,255,255,0.18); }
+        .lightbox-btn svg {
+            width: 18px; height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .lightbox-close {
+            top: calc(16px + env(safe-area-inset-top));
+            right: 16px;
+        }
+        .lightbox-prev {
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .lightbox-next {
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        #lightbox-counter {
+            position: absolute;
+            bottom: calc(28px + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.7);
+            font-family: 'Italiana', serif;
+            font-size: var(--fz-tiny);
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            z-index: 2;
+            font-feature-settings: "lnum", "tnum";
+        }
+
         /* ================ TOAST ================ */
         #toast {
             position: fixed;
@@ -879,9 +1042,12 @@
                 <div class="contact-side">
                     <h5>Side of Groom</h5>
                     <div class="contact-row">
-                        <div>
-                            <span class="contact-rel">신랑</span>
-                            <span class="contact-name">양현호</span>
+                        <div class="contact-info">
+                            <div class="contact-meta">
+                                <span class="contact-rel">신랑</span>
+                                <span class="contact-name">양현호</span>
+                            </div>
+                            <div class="contact-tel">010-0000-0000</div>
                         </div>
                         <div class="contact-actions">
                             <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
@@ -889,9 +1055,12 @@
                         </div>
                     </div>
                     <div class="contact-row">
-                        <div>
-                            <span class="contact-rel">아버지</span>
-                            <span class="contact-name">양문규</span>
+                        <div class="contact-info">
+                            <div class="contact-meta">
+                                <span class="contact-rel">아버지</span>
+                                <span class="contact-name">양문규</span>
+                            </div>
+                            <div class="contact-tel">010-0000-0000</div>
                         </div>
                         <div class="contact-actions">
                             <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
@@ -899,9 +1068,12 @@
                         </div>
                     </div>
                     <div class="contact-row">
-                        <div>
-                            <span class="contact-rel">어머니</span>
-                            <span class="contact-name">조미라</span>
+                        <div class="contact-info">
+                            <div class="contact-meta">
+                                <span class="contact-rel">어머니</span>
+                                <span class="contact-name">조미라</span>
+                            </div>
+                            <div class="contact-tel">010-0000-0000</div>
                         </div>
                         <div class="contact-actions">
                             <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
@@ -913,9 +1085,12 @@
                 <div class="contact-side">
                     <h5>Side of Bride</h5>
                     <div class="contact-row">
-                        <div>
-                            <span class="contact-rel">신부</span>
-                            <span class="contact-name">박수진</span>
+                        <div class="contact-info">
+                            <div class="contact-meta">
+                                <span class="contact-rel">신부</span>
+                                <span class="contact-name">박수진</span>
+                            </div>
+                            <div class="contact-tel">010-0000-0000</div>
                         </div>
                         <div class="contact-actions">
                             <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
@@ -923,9 +1098,12 @@
                         </div>
                     </div>
                     <div class="contact-row">
-                        <div>
-                            <span class="contact-rel">아버지</span>
-                            <span class="contact-name">박복용</span>
+                        <div class="contact-info">
+                            <div class="contact-meta">
+                                <span class="contact-rel">아버지</span>
+                                <span class="contact-name">박복용</span>
+                            </div>
+                            <div class="contact-tel">010-0000-0000</div>
                         </div>
                         <div class="contact-actions">
                             <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
@@ -933,9 +1111,12 @@
                         </div>
                     </div>
                     <div class="contact-row">
-                        <div>
-                            <span class="contact-rel">어머니</span>
-                            <span class="contact-name">진옥영</span>
+                        <div class="contact-info">
+                            <div class="contact-meta">
+                                <span class="contact-rel">어머니</span>
+                                <span class="contact-name">진옥영</span>
+                            </div>
+                            <div class="contact-tel">010-0000-0000</div>
                         </div>
                         <div class="contact-actions">
                             <a class="contact-btn" href="tel:01000000000" aria-label="전화"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></a>
@@ -1006,9 +1187,11 @@
             <span class="ko-sub">오시는 길</span>
         </div>
 
-        <div class="map-frame">
-            <div id="map-placeholder">지도를 불러오는 중입니다…</div>
-            <div id="map-area"></div>
+        <div class="map-image-wrap" onclick="openMapLightbox()">
+            <img src="./MAP.PNG" alt="씨엘드포레 웨딩홀 약도" loading="lazy">
+            <div class="map-zoom-hint">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/><line x1="11" y1="8" x2="11" y2="14"/></svg>
+            </div>
         </div>
 
         <div class="venue">
@@ -1040,10 +1223,34 @@
         </div>
     </section>
 
-    <!-- ============ 05 ACCOUNTS ============ -->
+    <!-- ============ 05 RSVP ============ -->
     <section class="card observe-target">
         <div class="section-header">
             <span class="card-num">05</span>
+            <span class="en">RSVP</span>
+            <span class="ko-sub">참석 의사 전하기</span>
+        </div>
+
+        <p class="rsvp-prompt">
+            참석 여부를 알려주시면<br>
+            준비에 큰 도움이 됩니다.
+        </p>
+
+        <a href="https://forms.gle/YOUR_FORM_ID_HERE" target="_blank" rel="noopener" class="rsvp-btn">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>참석 의사 전하기</span>
+        </a>
+
+        <p class="rsvp-deadline">
+            부득이한 사정이 있으시다면<br>
+            <span>2026년 9월 20일</span>까지 회신 부탁드립니다.
+        </p>
+    </section>
+
+    <!-- ============ 06 ACCOUNTS ============ -->
+    <section class="card observe-target">
+        <div class="section-header">
+            <span class="card-num">06</span>
             <span class="en">Heartfelt Thanks</span>
             <span class="ko-sub">마음 전하실 곳</span>
         </div>
@@ -1084,10 +1291,10 @@
         </div>
     </section>
 
-    <!-- ============ 06 SHARE ============ -->
+    <!-- ============ 07 SHARE ============ -->
     <section class="card observe-target" style="margin-bottom: 28px;">
         <div class="section-header">
-            <span class="card-num">06</span>
+            <span class="card-num">07</span>
             <span class="en">Share</span>
             <span class="ko-sub">청첩장 전하기</span>
         </div>
@@ -1110,6 +1317,23 @@
 
     <div class="footer-mark">— Hyeon-Ho &amp; Sujin —</div>
 
+</div>
+
+<!-- ============ LIGHTBOX ============ -->
+<div id="lightbox" aria-hidden="true">
+    <button class="lightbox-btn lightbox-close" id="lb-close" aria-label="닫기">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+    </button>
+    <button class="lightbox-btn lightbox-prev" id="lb-prev" aria-label="이전">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="lightbox-btn lightbox-next" id="lb-next" aria-label="다음">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="lightbox-stage">
+        <img id="lightbox-img" alt="">
+    </div>
+    <div id="lightbox-counter"></div>
 </div>
 
 <div id="toast">복사되었습니다</div>
@@ -1245,6 +1469,18 @@ function downloadICS() {
         'SUMMARY:양현호 ♥ 박수진 결혼식',
         'LOCATION:대전 씨엘드포레 7F (대전광역시 동구 동서대로 1700)',
         'DESCRIPTION:2026년 10월 3일 토요일 오전 11시',
+        /* Reminder 1 week before */
+        'BEGIN:VALARM',
+        'TRIGGER:-P7D',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:1주 후 양현호 ♥ 박수진 결혼식',
+        'END:VALARM',
+        /* Reminder 1 day before */
+        'BEGIN:VALARM',
+        'TRIGGER:-P1D',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:내일 양현호 ♥ 박수진 결혼식',
+        'END:VALARM',
         'END:VEVENT',
         'END:VCALENDAR'
     ].join('\r\n');
@@ -1336,27 +1572,110 @@ function copyURL() {
     }
 })();
 
-/* ---------- Kakao Map ---------- */
-window.addEventListener('load', function () {
-    const placeholder = document.getElementById('map-placeholder');
-    if (typeof kakao === 'undefined' || !kakao.maps) {
-        placeholder.innerHTML = '지도를 불러올 수 없습니다.<br>아래 카카오맵 / 네이버지도 버튼을 이용해 주세요.';
-        return;
+/* ---------- Lightbox ---------- */
+const lightbox = (function () {
+    const el = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    const counter = document.getElementById('lightbox-counter');
+    const prevBtn = document.getElementById('lb-prev');
+    const nextBtn = document.getElementById('lb-next');
+    const closeBtn = document.getElementById('lb-close');
+
+    let urls = [];
+    let index = 0;
+
+    function update() {
+        img.src = urls[index];
+        counter.textContent = `${String(index + 1).padStart(2, '0')} / ${String(urls.length).padStart(2, '0')}`;
+        const multi = urls.length > 1;
+        prevBtn.style.display = multi ? 'flex' : 'none';
+        nextBtn.style.display = multi ? 'flex' : 'none';
+        counter.style.display = multi ? 'block' : 'none';
     }
-    kakao.maps.load(function () {
-        try {
-            const center = new kakao.maps.LatLng(36.35038, 127.43703);
-            const map = new kakao.maps.Map(document.getElementById('map-area'), {
-                center: center,
-                level: 4
-            });
-            new kakao.maps.Marker({ position: center, map: map });
-            placeholder.style.display = 'none';
-        } catch (e) {
-            placeholder.innerHTML = '지도를 불러올 수 없습니다.<br>아래 버튼으로 위치를 확인해 주세요.';
+    function open(srcArr, startIdx = 0) {
+        urls = srcArr;
+        index = startIdx;
+        update();
+        el.classList.add('open');
+        el.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+    function close() {
+        el.classList.remove('open');
+        el.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+    function next() { index = (index + 1) % urls.length; update(); }
+    function prev() { index = (index - 1 + urls.length) % urls.length; update(); }
+
+    closeBtn.addEventListener('click', close);
+    prevBtn.addEventListener('click', prev);
+    nextBtn.addEventListener('click', next);
+
+    /* Click outside image (on backdrop) closes */
+    el.addEventListener('click', (e) => {
+        if (e.target === el || e.target.classList.contains('lightbox-stage')) close();
+    });
+
+    /* Keyboard navigation */
+    document.addEventListener('keydown', (e) => {
+        if (!el.classList.contains('open')) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowLeft') prev();
+        else if (e.key === 'ArrowRight') next();
+    });
+
+    /* Touch swipe — image follows finger, snaps on release */
+    let startX = 0, startY = 0, dx = 0, swiping = false;
+    el.addEventListener('touchstart', (e) => {
+        if (e.touches.length !== 1) return;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        dx = 0;
+        swiping = true;
+        img.classList.add('swiping');
+    }, { passive: true });
+
+    el.addEventListener('touchmove', (e) => {
+        if (!swiping) return;
+        dx = e.touches[0].clientX - startX;
+        const dy = e.touches[0].clientY - startY;
+        if (Math.abs(dx) > Math.abs(dy)) {
+            img.style.transform = `translateX(${dx * 0.4}px)`;
+        }
+    }, { passive: true });
+
+    el.addEventListener('touchend', () => {
+        if (!swiping) return;
+        swiping = false;
+        img.classList.remove('swiping');
+        img.style.transform = '';
+        const threshold = 60;
+        if (Math.abs(dx) > threshold && urls.length > 1) {
+            if (dx > 0) prev(); else next();
         }
     });
-});
+
+    return { open, close, next, prev };
+})();
+
+/* ---------- Wire gallery → lightbox ---------- */
+(function () {
+    const items = document.querySelectorAll('.gallery .gallery-item');
+    const urls = Array.from(items).map(item => {
+        if (item.dataset.src) return item.dataset.src;
+        const m = item.style.backgroundImage.match(/url\(["']?(.+?)["']?\)/);
+        return m ? m[1] : '';
+    });
+    items.forEach((item, i) => {
+        item.addEventListener('click', () => lightbox.open(urls, i));
+    });
+})();
+
+/* ---------- Map lightbox ---------- */
+function openMapLightbox() {
+    lightbox.open(['./MAP.PNG'], 0);
+}
 
 function openKakaoMap() { window.location.href = 'https://kko.to/Cz7NTucMla'; }
 function openNaverMap() { window.location.href = 'https://naver.me/x67ywAmF'; }
