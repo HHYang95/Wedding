@@ -1574,7 +1574,6 @@
             <h3>대전 씨엘드포레</h3>
             <p>
                 대전광역시 동구 동서대로 1700, 7층<br>
-                (선샤인호텔 내)
             </p>
         </div>
 
@@ -1769,14 +1768,21 @@ document.querySelectorAll('.observe-target').forEach(el => io.observe(el));
 const PHOTOS = Array.from({ length: 22 }, (_, i) => `./${i + 1}.jpg`);
 /* Per-photo background-position overrides for grid (lightbox unaffected — uses object-fit: contain).
    Format: 1-indexed photo number → CSS background-position value.
-   Lower y-percentage = head shows more, feet crop more. */
+   Lower y% = head shows more (head not cropped); higher y% = legs show more. */
 const PHOTO_POSITIONS = {
-    2: 'center 25%',
-    3: 'center 25%',
-    4: 'center 25%',
-    5: 'center 25%',
-    10: 'center 25%',
-    16: 'center 25%'
+    /* Heads were cropping — pull image up */
+    1:  'center 18%',
+    2:  'center 18%',
+    3:  'center 18%',
+    4:  'center 25%',
+    5:  'center 25%',
+    10: 'center 12%',
+    16: 'center 25%',
+    /* Lower body cropping — pull image down */
+    19: 'center 72%',
+    20: 'center 72%',
+    21: 'center 62%',
+    22: 'center 62%'
 };
 const PAGE_SIZE = 9;
 
