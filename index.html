@@ -8,11 +8,13 @@
     <title>Ethereal Wedding | 양현호 & 박수진</title>
     <meta property="og:title" content="양현호 & 박수진 결혼합니다">
     <meta property="og:description" content="2026년 10월 3일 오전 11시 | 대전 씨엘드포레">
-    <meta property="og:image" content="./8F1A5135.JPG">
+    <meta property="og:image" content="./8F1A5624.JPG">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4d7ecd1f497c03701268ff3494996a6c"></script>
+    
+    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=4d7ecd1f497c03701268ff3494996a6c"></script>
+    
     <style>
         :root {
             color-scheme: light;
@@ -88,7 +90,7 @@
         .hero-bg {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-image: url('./8F1A4594.JPG'); 
+            background-image: url('./8F1A5624.JPG'); 
             background-size: cover;
             background-position: center 20%;
             z-index: -2;
@@ -204,9 +206,7 @@
     </style>
 </head>
 <body>
-
 <canvas id="particle-canvas"></canvas>
-
 <div id="app">
     <div class="hero">
         <div class="hero-bg"></div>
@@ -227,7 +227,6 @@
             <div style="width: 1px; height: 35px; background: var(--text-main); margin: 0 auto; animation: scrollDown 2s infinite;"></div>
         </div>
     </div>
-
     <div class="glass-panel observe-target">
         <h2 class="section-title en-font">Invitation</h2>
         <p class="paragraph">
@@ -245,23 +244,24 @@
             <p><span style="font-size: 0.9rem; color: #888; margin-right: 12px;">박복용 · 진옥영 의 &nbsp;&nbsp;딸</span> <b>수진</b></p>
         </div>
     </div>
-
     <div class="glass-panel observe-target">
         <h2 class="section-title en-font">Gallery</h2>
         <div class="gallery-container">
+            <div class="gallery-item" style="background-image: url('./8F1A5135.JPG');"></div>
+            <div class="gallery-item" style="background-image: url('./8F1A4594.JPG');"></div>
             <div class="gallery-item" style="background-image: url('./8F1A4882.JPG');"></div>
             <div class="gallery-item" style="background-image: url('./8F1A4913.JPG');"></div>
             <div class="gallery-item" style="background-image: url('./8F1A5275.JPG');"></div>
             <div class="gallery-item" style="background-image: url('./8F1A5443.JPG');"></div>
-            <div class="gallery-item" style="background-image: url('./8F1A5668.JPG');"></div>
             <div class="gallery-item" style="background-image: url('./8F1A6152.JPG');"></div>
         </div>
         <p style="font-size: 0.85rem; color: #aaa; margin-top: 15px;">좌우로 넘겨보세요</p>
     </div>
-
     <div class="glass-panel observe-target">
         <h2 class="section-title en-font">Location</h2>
-        <div id="map-area" style="width: 100%; height: 250px; border-radius: 12px; margin-bottom: 25px;"></div>
+        <div id="map-area" style="width: 100%; height: 250px; border-radius: 12px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; background: #e9e5df; color: var(--gold);">
+            지도를 불러오는 중입니다...
+        </div>
         <div style="text-align: left; margin-bottom: 30px;">
             <h3 style="font-size: 1.25rem; margin-bottom: 10px;">대전 씨엘드포레</h3>
             <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">
@@ -286,7 +286,6 @@
             <p>대전복합터미널 하차 후 맞은편 도보 3분 거리</p>
         </div>
     </div>
-
     <div class="glass-panel observe-target" style="margin-bottom: 100px;">
         <h2 class="section-title en-font">Heartfelt Thanks</h2>
         <p style="font-size: 0.95rem; margin-bottom: 30px; color: var(--text-muted);">
@@ -302,9 +301,7 @@
         </button>
     </div>
 </div>
-
 <div id="toast">복사되었습니다.</div>
-
 <script>
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -313,7 +310,6 @@
             }
         });
     }, { threshold: 0.15 });
-
     document.querySelectorAll('.observe-target').forEach(el => observer.observe(el));
 
     function copyToClipboard(text) {
@@ -323,7 +319,6 @@
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
-
         const toast = document.getElementById('toast');
         toast.innerText = text.split(' ')[0] + " 계좌가 복사되었습니다.";
         toast.classList.add('show');
@@ -333,7 +328,6 @@
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
-
     function init() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -349,7 +343,6 @@
             });
         }
     }
-
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => {
@@ -362,32 +355,38 @@
         });
         requestAnimationFrame(animate);
     }
-
     window.addEventListener('resize', init);
     init();
     animate();
 
     window.onload = function() {
-        if(typeof kakao !== 'undefined') {
-            const mapContainer = document.getElementById('map-area');
+        const mapContainer = document.getElementById('map-area');
+        
+        // 카카오맵 객체가 정상적으로 불러와졌는지 확인
+        if(typeof kakao !== 'undefined' && kakao.maps) {
+            // 안내 문구 지우기
+            mapContainer.innerHTML = '';
+            
             const mapOption = { 
                 center: new kakao.maps.LatLng(36.35038, 127.43703),
-                level: 3
+                level: 4
             };
             const map = new kakao.maps.Map(mapContainer, mapOption); 
             const markerPosition  = new kakao.maps.LatLng(36.35038, 127.43703); 
             const marker = new kakao.maps.Marker({ position: markerPosition });
             marker.setMap(map);
+        } else {
+            // 도메인 미등록 등으로 API 로드 실패 시 에러 문구 표시
+            mapContainer.innerHTML = "<p style='font-size: 0.9rem; text-align:center;'>카카오맵을 불러올 수 없습니다.<br>도메인 등록 설정을 확인해주세요.</p>";
         }
     };
 
     function openKakaoMap() {
-        window.location.href = 'https://map.kakao.com/link/to/대전 씨엘드포레,36.35038,127.43703';
+        window.location.href = 'https://kko.to/Cz7NTucMla';
     }
     function openNaverMap() {
-        window.location.href = 'https://map.naver.com/v5/directions/-/-/14185200,4349180,대전 씨엘드포레,place';
+        window.location.href = 'https://naver.me/x67ywAmF';
     }
 </script>
-
 </body>
 </html>
