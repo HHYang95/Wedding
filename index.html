@@ -12,6 +12,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=4d7ecd1f497c03701268ff3494996a6c"></script>
+
     <style>
         :root {
             color-scheme: light;
@@ -259,10 +262,11 @@
     <div class="glass-panel observe-target">
         <h2 class="section-title en-font">Location</h2>
         
-        <div id="map-area" style="width: 100%; height: 250px; border-radius: 12px; margin-bottom: 25px; background: #e9e5df; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-            <div id="map-placeholder" style="color: var(--gold); text-align: center; font-size: 0.95rem;">
+        <div style="width: 100%; height: 250px; border-radius: 12px; margin-bottom: 25px; background: #e9e5df; position: relative; overflow: hidden;">
+            <div id="map-placeholder" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--gold); text-align: center; font-size: 0.95rem; z-index: 1;">
                 지도를 불러오는 중입니다...
             </div>
+            <div id="map-area" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"></div>
         </div>
         
         <div style="text-align: left; margin-bottom: 30px;">
@@ -364,36 +368,27 @@
     init();
     animate();
 
-    // 카카오맵 100% 동적 로딩 스크립트
-    function loadKakaoMap() {
-        const script = document.createElement('script');
-        script.src = "https://dapi.kakao.com/v2/maps/sdk.js?appkey=4d7ecd1f497c03701268ff3494996a6c&autoload=false";
-        document.head.appendChild(script);
-
-        script.onload = () => {
-            kakao.maps.load(() => {
+    // 💡 가장 안전한 지도 초기화 방식
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            if (typeof kakao !== 'undefined' && kakao.maps) {
                 const mapContainer = document.getElementById('map-area');
-                mapContainer.innerHTML = ''; 
-                mapContainer.style.display = 'block'; 
-                
-                const position = new kakao.maps.LatLng(36.35038, 127.43703);
                 const mapOption = { 
-                    center: position,
+                    center: new kakao.maps.LatLng(36.35038, 127.43703),
                     level: 4
                 };
                 const map = new kakao.maps.Map(mapContainer, mapOption); 
-                const marker = new kakao.maps.Marker({ position: position });
+                const markerPosition  = new kakao.maps.LatLng(36.35038, 127.43703); 
+                const marker = new kakao.maps.Marker({ position: markerPosition });
                 marker.setMap(map);
-            });
-        };
-        
-        script.onerror = () => {
-            document.getElementById('map-placeholder').innerHTML = "지도 로딩 오류<br>(인터넷 연결이나 도메인을 확인해주세요)";
-        };
-    }
-    
-    // 페이지 구성이 완전히 끝난 후 지도 호출
-    window.addEventListener('DOMContentLoaded', loadKakaoMap);
+
+                // 지도 로딩이 성공하면 임시 문구 숨김
+                document.getElementById('map-placeholder').style.display = 'none';
+            } else {
+                document.getElementById('map-placeholder').innerHTML = "카카오맵을 불러올 수 없습니다.<br>PC나 스마트폰 브라우저 환경에서 확인해주세요.";
+            }
+        }, 300);
+    });
 
     function openKakaoMap() {
         window.location.href = 'https://kko.to/Cz7NTucMla';
