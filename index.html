@@ -932,7 +932,7 @@
             gap: 10px;
         }
         .share-btn {
-            padding: 14px 0;
+            padding: 14px 8px;
             border-radius: 999px;
             border: 1.5px solid var(--rule-line);
             background: var(--bg-card);
@@ -940,13 +940,14 @@
             font-family: 'Noto Serif KR', serif;
             font-size: var(--fz-small);
             font-weight: 600;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
             cursor: pointer;
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             min-height: 46px;
             -webkit-tap-highlight-color: transparent;
         }
@@ -1213,7 +1214,7 @@
             .card { margin: 14px; }
             .ics-btn { min-width: 0; width: 100%; padding: 14px 18px; }
             .map-buttons { gap: 6px; }
-            .share-btns { gap: 8px; }
+            .share-btns { grid-template-columns: 1fr; gap: 8px; }
             .parents { column-gap: 10px; }
             .parent-row .name { font-size: 1.08rem; letter-spacing: 0.12em; }
         }
@@ -1521,7 +1522,7 @@
         <div class="share-btns">
             <button class="share-btn share-btn-kakao" onclick="shareKakao()">
                 <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.83 1.86 5.32 4.66 6.78L5.5 21.5l4.4-2.43c.7.1 1.4.16 2.1.16 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/></svg>
-                <span>카카오톡으로 공유</span>
+                <span>카카오톡 공유</span>
             </button>
             <button class="share-btn" onclick="copyURL()">
                 <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
