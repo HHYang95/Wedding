@@ -290,14 +290,12 @@
             font-weight: 400;
         }
         .hero-date {
-            font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
-            font-weight: 500;
-            font-size: 1rem;
-            letter-spacing: 0.14em;
+            font-family: 'Noto Serif KR', serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.06em;
             color: var(--ink-primary);
             margin-bottom: 6px;
-            font-feature-settings: "lnum";
         }
         .hero-venue {
             font-size: var(--fz-small);
@@ -308,29 +306,18 @@
         }
 
         /* Scroll cue is now in the normal flow inside .hero-info */
-        .scroll-cue { text-align: center; }
-        .scroll-cue span {
-            font-family: 'Italiana', serif;
-            font-size: 0.7rem;
-            letter-spacing: 0.35em;
+        .scroll-cue {
+            text-align: center;
+            margin-top: 4px;
+        }
+        .scroll-icon {
             color: var(--accent);
-            display: block;
-            margin-bottom: 10px;
-            -webkit-text-stroke: 0.3px currentColor;
+            opacity: 0.7;
+            animation: scrollBounce 2s ease-in-out infinite;
         }
-        .scroll-cue::after {
-            content: '';
-            display: block;
-            width: 1px; height: 24px;
-            background: var(--accent);
-            margin: 0 auto;
-            animation: scrollLine 2.2s ease-in-out infinite;
-            transform-origin: top;
-        }
-        @keyframes scrollLine {
-            0%   { transform: scaleY(0.2); opacity: 0; }
-            40%  { opacity: 1; }
-            100% { transform: scaleY(1); opacity: 0; }
+        @keyframes scrollBounce {
+            0%, 100% { transform: translateY(0);  opacity: 0.4; }
+            50%      { transform: translateY(5px); opacity: 0.95; }
         }
 
         /* ================ SECTION HEADER ================ */
@@ -633,10 +620,12 @@
             font-weight: 500;
         }
         .cal-month {
-            font-size: 1.55rem;
-            font-style: italic;
-            font-weight: 500;
+            font-family: 'Noto Serif KR', serif;
+            font-size: 1.5rem;
+            font-style: normal;
+            font-weight: 600;
             color: var(--accent);
+            letter-spacing: 0.02em;
         }
 
         /* Day-of-week header row — separate grid so the underline is one continuous line */
@@ -648,11 +637,12 @@
             margin-bottom: 8px;
         }
         .cal-dow {
-            font-family: 'Italiana', serif;
-            font-size: var(--fz-tiny);
-            letter-spacing: 0.12em;
+            font-family: 'Noto Serif KR', serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.04em;
             color: var(--ink-tertiary);
             text-align: center;
+            font-weight: 500;
         }
         .cal-dow.sunday { color: var(--sunday); }
 
@@ -703,7 +693,7 @@
             margin-top: 22px;
             text-align: center;
             font-size: var(--fz-small);
-            letter-spacing: 0.18em;
+            letter-spacing: 0.06em;
             color: var(--ink-secondary);
             font-weight: 500;
             padding-top: 22px;
@@ -944,13 +934,13 @@
         .info-list { display: flex; flex-direction: column; gap: 18px; }
         .info-item { text-align: left; }
         .info-item h4 {
-            font-family: 'Italiana', serif;
-            font-size: 0.78rem;
-            letter-spacing: 0.28em;
+            font-family: 'Noto Serif KR', serif;
+            font-size: 0.95rem;
+            letter-spacing: 0.06em;
             color: var(--accent);
             margin-bottom: 8px;
-            text-transform: uppercase;
-            -webkit-text-stroke: 0.3px currentColor;
+            text-transform: none;
+            font-weight: 600;
         }
         .info-item p { font-size: var(--fz-small); line-height: 1.85; color: var(--ink-secondary); font-weight: 400; }
         .info-item + .info-item { padding-top: 18px; border-top: 1px solid var(--rule-line); }
@@ -1425,9 +1415,13 @@
                 <span class="amp">&amp;</span>
                 <span class="ko">박수진</span>
             </h1>
-            <p class="hero-date">2026 · 10 · 03 · SAT · 11 AM</p>
-            <p class="hero-venue">대전 씨엘드포레 · 7F</p>
-            <div class="scroll-cue"><span>Scroll</span></div>
+            <p class="hero-date">2026년 10월 3일 토요일 오전 11시</p>
+            <p class="hero-venue">대전 씨엘드포레 · 7층</p>
+            <div class="scroll-cue" aria-hidden="true">
+                <svg class="scroll-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </div>
         </div>
     </div>
 
@@ -1527,19 +1521,19 @@
         <div class="calendar">
             <div class="calendar-head">
                 <span class="cal-year">2026</span>
-                <span class="cal-month">October</span>
+                <span class="cal-month">10월</span>
             </div>
             <div class="cal-dows">
-                <span class="cal-dow sunday">SUN</span>
-                <span class="cal-dow">MON</span>
-                <span class="cal-dow">TUE</span>
-                <span class="cal-dow">WED</span>
-                <span class="cal-dow">THU</span>
-                <span class="cal-dow">FRI</span>
-                <span class="cal-dow">SAT</span>
+                <span class="cal-dow sunday">일</span>
+                <span class="cal-dow">월</span>
+                <span class="cal-dow">화</span>
+                <span class="cal-dow">수</span>
+                <span class="cal-dow">목</span>
+                <span class="cal-dow">금</span>
+                <span class="cal-dow">토</span>
             </div>
             <div class="cal-days" id="cal-grid"></div>
-            <div class="calendar-time">11:00 AM · Saturday</div>
+            <div class="calendar-time">오전 11시 · 토요일</div>
         </div>
 
         <div class="action-buttons">
@@ -1597,15 +1591,15 @@
 
         <div class="info-list">
             <div class="info-item">
-                <h4>Parking</h4>
+                <h4>주차</h4>
                 <p>복합터미널 맞은편 투썸플레이스 옆 주차장 입구<br>선샤인호텔 전용 주차장 이용 가능</p>
             </div>
             <div class="info-item">
-                <h4>Bus</h4>
+                <h4>시내버스</h4>
                 <p>102, 105, 106, 201, 501, 601, 602, 607, 611, 616, 701, 802, 2(급행)</p>
             </div>
             <div class="info-item">
-                <h4>Express &amp; Intercity Bus</h4>
+                <h4>고속·시외버스</h4>
                 <p>대전복합터미널 하차 후 맞은편 도보 3분</p>
             </div>
         </div>
